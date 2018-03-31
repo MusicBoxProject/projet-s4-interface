@@ -7,7 +7,7 @@
 /out-tsc
 
 # files
-commands.txt
+*.txt
 
 # dependencies
 /node_modules
