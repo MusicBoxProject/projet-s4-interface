@@ -1,7 +1,7 @@
 import { Component, OnInit,Output,Input, EventEmitter } from '@angular/core';
 import {Playlist} from '../../../../playlist'
 import { PlaylistsService } from '../../../../playlists.service'
-import {NgbModal, NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 @Component({
   selector: 'app-add',
   templateUrl: './add.component.html',
