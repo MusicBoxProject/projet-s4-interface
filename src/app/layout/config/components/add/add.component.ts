@@ -8,7 +8,7 @@ import {NgbModal, NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
   styleUrls: ['./add.component.scss']
 })
 export class AddComponent implements OnInit {
-  @Input() model =new Playlist(18,"Music","New one",3);
+  @Input() model =new Playlist(18,"Name your playlist","Add Description",3);
   @Input() isEdit: boolean ;
   @Output() getPlaylist = new EventEmitter();
   

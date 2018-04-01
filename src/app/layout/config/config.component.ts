@@ -45,7 +45,7 @@ export class ConfigComponent implements OnInit {
   }
   addPlaylist(): void {
     this.isEdit = false;
-    this.selectedPlaylist = new Playlist(18,"Music","New one",3);
+    this.selectedPlaylist = new Playlist(18,"Playlist name","Add Description",3);
     this.open();
       
   }
