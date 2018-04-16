@@ -8,7 +8,7 @@ import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
   styleUrls: ['./add.component.scss']
 })
 export class AddComponent implements OnInit {
-  @Input() model =new Playlist(18,"Name your playlist","Add Description",3);
+  @Input() model =new Playlist("18","Name your playlist","Add Description",3);
   @Input() isEdit: boolean ;
   @Output() getPlaylist = new EventEmitter();
   
@@ -22,17 +22,19 @@ export class AddComponent implements OnInit {
           //When delete() button is clicked getId gets called and emit the value of this.label
         //as an event the config componenet intercept this event
 if (this.isEdit){
+  this.model.tag=Number(this.model.tag)
   console.log(this.model)
   this.playlistsService.editPlaylist(this.model);
 }
   else {
+    this.model.tag=Number(this.model.tag)
     this.playlistsService.addPlaylist(this.model);
 
       }
     
     }
   newPlaylist() {
-    this.model = new Playlist(42, '', '',1);
+    this.model = new Playlist("42", '', '',1);
   }
   get diagnostic() { return JSON.stringify(this.model); }
 

@@ -10,7 +10,7 @@ export class StatComponent implements OnInit {
     @Input() bgClass: string;
     @Input() icon: string;
     @Input() count: number;
-    @Input() label: number;
+    @Input() label: string;
     @Input() data: string;
     @Output() getIdToDelete = new EventEmitter();
     @Output() getIdToEdit = new EventEmitter();

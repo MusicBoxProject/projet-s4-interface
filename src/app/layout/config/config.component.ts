@@ -12,18 +12,16 @@ import { AddComponent } from './components/add/add.component';
 export class ConfigComponent implements OnInit {
 
   closeResult: string;
-  playlists : Playlist[]
+  playlists : Playlist[];
   selectedPlaylist : Playlist;
   isEdit : boolean ;
   getPlaylists(): void {
     this.playlistsService.getPlaylists()
-        .subscribe(playlists => this.playlists = playlists);
-    console.log("this.playlists.length")
-    console.log(this.playlists)
+        .subscribe(playlists => this.playlists=playlists);
 
   }
 
-  indexOf (id:number,arr: any[]) : number {
+  indexOf (id:string,arr: any[]) : number {
     let k : number =0;
     for (let a of arr){
       if (a.id === id) {
@@ -35,7 +33,7 @@ export class ConfigComponent implements OnInit {
   }
 
   deletePlaylist(id): void{
-    this.playlistsService.deletePlaylist(this.indexOf(id,this.playlists))
+    this.playlistsService.deletePlaylist(id)
   }
   editPlaylist(id): void{
     this.isEdit=true;
@@ -45,7 +43,7 @@ export class ConfigComponent implements OnInit {
   }
   addPlaylist(): void {
     this.isEdit = false;
-    this.selectedPlaylist = new Playlist(18,"Playlist name","Add Description",3);
+    this.selectedPlaylist = new Playlist("18","Playlist name","Add Description",3);
     this.open();
       
   }
