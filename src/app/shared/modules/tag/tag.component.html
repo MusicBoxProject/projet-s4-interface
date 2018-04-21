@@ -1,0 +1,20 @@
+
+
+<div class="container-fluid">
+  <div class="card" >
+     <div class="card-header" [attr.data-background-color]=bgClass>
+        <i class="fa {{icon}} fa-5x"></i>
+     </div>
+     <div class="card-content">
+        <div class="group-buttons">
+           <button type="button" [attr.data-background-color]=bgClass class="btn" (click)="edit()">
+           <span class="fa fa-pencil fa-fw"></span> 
+           </button>
+           <button type="button" [attr.data-background-color]=bgClass class="btn"(click)="delete()">
+           <span class="fa fa-trash fa-fw"></span> 
+           </button>
+        </div>
+     </div>
+  </div>
+</div>
+

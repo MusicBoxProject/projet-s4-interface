@@ -9,6 +9,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 export class StatComponent implements OnInit {
     @Input() bgClass: string;
     @Input() icon: string;
+    @Input() name: string;
     @Input() count: number;
     @Input() label: string;
     @Input() data: string;
@@ -16,6 +17,7 @@ export class StatComponent implements OnInit {
     @Output() getIdToEdit = new EventEmitter();
 
     Counter = 0;
+    theme = "blue"
 
     delete() { // You can give any function name
         //When delete() button is clicked getId gets called and emit the value of this.label
