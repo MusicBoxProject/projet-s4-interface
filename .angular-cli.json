@@ -21,7 +21,7 @@
       "styles": [
         "../node_modules/font-awesome/css/font-awesome.css",
         "styles/app.scss"
-],
+      ],
       "scripts": [],
       "environmentSource": "environments/environment.ts",
       "environments": {
@@ -55,7 +55,8 @@
     }
   },
   "defaults": {
-    "styleExt": "css",
-    "component": {}
+    "styleExt": "scss",
+    "component": {
+    }
   }
 }
