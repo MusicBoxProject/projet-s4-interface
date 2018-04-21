@@ -1,11 +1,54 @@
-.nav-tabs
+.nav-pills
 {
     display: flex;
     flex-wrap: nowrap;
     justify-content: space-around;
 }
+.nav-item {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    border-radius: 0;
 
-.playlists
-{
-    width: 90%;
 }
+
+.nav-link{
+    width: 100%;
+    display: flex;
+    color: grey;
+    justify-content: center;
+    border-radius: 0;
+    cursor: pointer;
+
+}
+
+// .nav-link:hover {
+//     color:rgb(201, 199, 199);
+//     background-color: rgb(194, 192, 192);
+
+// }
+
+
+
+.nav-link.active {
+    color:rgb(35, 30, 82);
+    background: none;
+    border-bottom: 5px solid rgb(35, 30, 82);
+}
+
+.playlists, .tags
+{
+    width: 80%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    li {
+        width: 100%;
+        list-style-type: none;
+    }
+}
+
+
+
+

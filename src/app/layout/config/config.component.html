@@ -7,21 +7,34 @@
   <div class="col-lg-8">
       <div class="card card-default">
           <div class="card-header">
-                  <ul class="nav nav-tabs">
-                    <li class="nav-item">
-                      <a class="nav-link" href="#">Playlists</a>
-                    </li>
-                    <li class="nav-item ">
-                      <a class="nav-link disabled" href="#">Tags</a>
-                    </li>
-                  </ul>
-          </div>
+            <ul class="nav nav-pills">
+              <li class="nav-item">
+                <a class="nav-link" [class.active]="(isPlaylistList===true)" (click)=changeList(true)>Playlists</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" [class.active]="(isPlaylistList===false)" (click)=changeList(false)>Tags</a>
+              </li>
+            </ul>         
+           </div>
           <!-- /.card-header -->
-          <ul class="playlists">
-              <li *ngFor="let playlist of playlists">
-                  <app-stat [bgClass]="'primary'" [icon]="'fa-comments'" [count]="26" [label]=playlist.id [data]=playlist.description (getIdToDelete)='deletePlaylist($event)' (getIdToEdit)='editPlaylist($event)'></app-stat>
-                </li>
-            </ul>      </div>
+            <div *ngIf="(isPlaylistList===true);then playlistsBlock else tagsBlock"></div>
+            <ng-template #playlistsBlock>
+              <ul class="playlists">
+                <li *ngFor="let playlist of playlists">
+                    <app-stat [bgClass]="'blue'" [icon]="'fa-music'" [name]=playlist.name [count]="26" [label]=playlist.id [data]=playlist.description (getIdToDelete)='deletePlaylist($event)' (getIdToEdit)='editPlaylist($event)'></app-stat>
+                  </li>
+              </ul>      
+            </ng-template>
+            <ng-template #tagsBlock>
+              <ul class="tags">
+                <li *ngFor="let tag of tags">
+                    <app-tag [bgClass]=tag.color [icon]="'fa-tag'" [name]=tag.name [count]="26" [label]=tag.id [data]=tag.color (getIdToDelete)='deletePlaylist($event)' (getIdToEdit)='editPlaylist($event)'></app-tag>
+                  </li>
+              </ul>      
+            </ng-template>
+            
+          
+          </div>
       <!-- /.card-body-->
   </div>
   <!-- /.col-lg-8 -->
