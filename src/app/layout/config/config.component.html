@@ -9,10 +9,10 @@
           <div class="card-header">
             <ul class="nav nav-pills">
               <li class="nav-item">
-                <button type="button" class="nav-link active" (click)=changeList(true)>Playlists</button>
+                <a class="nav-link" [class.active]="(isPlaylistList===true)" (click)=changeList(true)>Playlists</a>
               </li>
               <li class="nav-item">
-                <button type="button" class="nav-link" (click)=changeList(false)>Tags</button>
+                <a class="nav-link" [class.active]="(isPlaylistList===false)" (click)=changeList(false)>Tags</a>
               </li>
             </ul>         
            </div>

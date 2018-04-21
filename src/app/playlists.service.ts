@@ -17,17 +17,17 @@ export class PlaylistsService {
     playlists : Playlist[] = PLAYLISTS ;
     parent:String
 
-/*  getPlaylists (): Observable<Playlist[]> {
+  getPlaylists (): Observable<Playlist[]> {
     return this.db.collection('playlists').snapshotChanges().map(actions => {
       return actions.map(a => {
         const data = a.payload.doc.data() as Playlist;
         return  data;
       });
-    })*/
-
-    getPlaylists (): Observable<Playlist[]> {
+    })
+  }
+/*    getPlaylists (): Observable<Playlist[]> {
       return of(this.playlists);
-     }
+     }*/
   
      addPlaylist (playlist: Playlist) {
       playlist.id = this.db.createId();
@@ -74,26 +74,26 @@ export class PlaylistsService {
     }
   
   constructor(private db : AngularFirestore) {
-    // //ref makes it a collection reference
-    //   db.collection('playlists').ref.get().then(querySnapshot =>
-    //     console.log("query: ",querySnapshot.docs.length))
-    //   /*function(querySnapshot) {
-    //   querySnapshot.forEach(function(doc) {
-    //         // doc.data() is never undefined for query doc snapshots
-    //         console.log(doc.id, " => ", doc.data());
-    //     });
-    // })*/
-    // .catch(function(error) {
-    //     console.log("Error getting documents: ", error);
-    // });
-    // db.collection('playlists').snapshotChanges().map(actions => {
-    //   return actions.map(a => {
-    //     const data = a.payload.doc.data() as Playlist;
-    //     //const id = a.payload.doc.id;
-    //     return  data;
-    //   });
-    // })
-    // .subscribe(obs => console.log(obs));
+  //   //ref makes it a collection reference
+  //     db.collection('playlists').ref.get().then(querySnapshot =>
+  //       console.log("query: ",querySnapshot.docs.length))
+  //     /*function(querySnapshot) {
+  //     querySnapshot.forEach(function(doc) {
+  //           // doc.data() is never undefined for query doc snapshots
+  //           console.log(doc.id, " => ", doc.data());
+  //       });
+  //   })*/
+  //   .catch(function(error) {
+  //       console.log("Error getting documents: ", error);
+  //   });
+  //   db.collection('playlists').snapshotChanges().map(actions => {
+  //     return actions.map(a => {
+  //       const data = a.payload.doc.data() as Playlist;
+  //       //const id = a.payload.doc.id;
+  //       return  data;
+  //     });
+  //   })
+  //   .subscribe(obs => console.log(obs));
   }
 }
 

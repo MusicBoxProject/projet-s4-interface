@@ -18,8 +18,18 @@
     color: grey;
     justify-content: center;
     border-radius: 0;
+    cursor: pointer;
 
 }
+
+// .nav-link:hover {
+//     color:rgb(201, 199, 199);
+//     background-color: rgb(194, 192, 192);
+
+// }
+
+
+
 .nav-link.active {
     color:rgb(35, 30, 82);
     background: none;
