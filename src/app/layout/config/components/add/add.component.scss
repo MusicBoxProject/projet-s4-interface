@@ -5,3 +5,42 @@
   .ng-invalid:not(form)  {
     border-left: 5px solid #a94442; /* red */
   }
+
+  .grid {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .grid-item {
+    flex-grow: 1;
+    min-width: 25%;
+  }
+
+  .form-row {
+    display: flex;
+    flex-direction: row;
+
+    .form-group {
+      margin: 0 0 0 0;
+      width: 100%;
+      padding-right:0;
+      padding-left:0;
+
+
+      input{
+        border-radius: 0;
+
+      }
+      
+    }
+    .input-group-text {
+      margin: 0 0 0 0;
+      width: 100%;
+      padding-right:0;
+      padding-left:0;
+      background-color: #42A948;
+        
+    }
+
+  }
+

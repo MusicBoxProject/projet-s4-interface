@@ -1,87 +1,127 @@
-{{diagnostic}}
+
+
+<!--{{diagnostic}}-->
 <div class="modal-header">
-  <h4 class="modal-title">Hi there!</h4>
-  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
-    <span aria-hidden="true">&times;</span>
-  </button>
+   <h4 class="modal-title">Hi there!</h4>
+   <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+   <span aria-hidden="true">&times;</span>
+   </button>
 </div>
 <div class="modal-body">
-  <div class="container">
-    <div [hidden]="submitted">
+<div class="container">
+   <div [hidden]="submitted">
       <h1>Playlist Form</h1>
-      <form (ngSubmit)="onSubmit()" #playlistForm="ngForm">
-        <div class="form-group">
-          <label for="name">Playlitst Name</label>
-          <input type="text" class="form-control" id="name"
-                 required
-                 [(ngModel)]="model.name" name="name"
-                 #name="ngModel">
-          <div [hidden]="name.valid || name.pristine"
-               class="alert alert-danger">
-            Name is required
-          </div>
-        </div>
-   
-        <div class="form-group">
-          <label for="alterEgo">Description</label>
-          <input type="text" class="form-control" id="alterEgo"
-                 [(ngModel)]="model.description" name="alterEgo">
-        </div>
-   
-        <div class="form-group">
-          <label for="power">Tag Association</label>
-          <select class="form-control" id="power"
-                  required
-                  [(ngModel)]="model.tag" name="power"
-                  #power="ngModel">
-            <option *ngFor="let pow of powers" [value]="pow">{{pow}}</option>
-          </select>
-          <div [hidden]="power.valid || power.pristine" class="alert alert-danger">
-            Power is required
-          </div>
-        </div>
-        <!--
-        <div class="form-group">
-            <label for="exampleInputFile">File input</label>
-            <input type="file" class="form-control-file" id="exampleInputFile" aria-describedby="fileHelp">
-            <small id="fileHelp" class="form-text text-muted">This is some placeholder block-level help text for the above input. It's a bit lighter and easily wraps to a new line.</small>
-          </div>
-          <fieldset class="form-group">
-            <legend>Radio buttons</legend>
-            <div *ngFor="let pow of powers">
-            <div class="form-check">
-              <label class="form-check-label">
-                <input type="radio" class="form-check-input" name="optionsRadios" id="optionsRadios1" value="option1" checked>
-                Option one is this and that&mdash;be sure to include why it's great
-              </label>
+      <form [formGroup]="playlistForm" (ngSubmit)="onSubmit()">
+      <div style="margin-bottom: 1em">
+         <button type="submit"
+            [disabled]="playlistForm.pristine" class="btn btn-success">Save</button> &nbsp;
+         <button type="button" (click)="revert()"
+         [disabled]="playlistForm.pristine" class="btn btn-danger">Revert</button>
+      </div>
+      <!-- Hero Detail Controls -->
+      <div class="form-group">
+         <label class="center-block">Name:
+         <input class="form-control" formControlName="name" required>
+         </label>
+      </div>
+      <div class="form-group">
+         <label class="center-block">Description:
+         <input class="form-control" formControlName="description" required>
+         </label>
+      </div>
+      <span class="center-block">Tag:</span> 
+      <div class="form-group form-row radio">
+         <div *ngFor="let tag of tags">
+            <label class="center-block"><input type="radio" formControlName="tag" value={{tag}}>{{tag}}</label>
+         </div>
+      </div>
+      <div class="form-group">
+         <label class="center-block">Type:
+         <select class="form-control" formControlName="type">
+         <option *ngFor="let type of types" [value]="type">{{type}}</option>
+         </select>
+         </label>
+      </div>
+      <div formArrayName="secretLairs" class="well well-lg">
+         <div *ngFor="let media of secretLairs.controls; let i=index" [formGroupName]="i" >
+         <!-- The repeated address template -->
+         <h4>Media #{{i + 1}}</h4>
+         <div style="margin-left: 1em;">
+            <div class=form-row>
+               <div class="form-group col-2">
+                  <select class="form-control" formControlName="uriType">
+                  <option *ngFor="let uriType of uriTypes" [value]="uriType">{{uriType}}</option>
+                  </select>
+               </div>
+               <div class="form-group col-2">
+                  <input class="form-control" formControlName="title" placeholder="Title">
+               </div>
+               <div class="form-group col-4">
+                  <input class="form-control" formControlName="author" placeholder="Author">
+               </div>
+               <div class="form-group col-2">
+                  <input class="form-control" formControlName="uri" placeholder="{{playlistForm.value.uriType}}">
+               </div>
+               <div class="col-2"> 
+                  <button type="button" (click)="deleteLair(i)"
+                  [disabled]="playlistForm.pristine" class="btn btn-danger">Revert</button>
+               </div>
             </div>
+            <br>
+            <!-- End of the repeated address template -->
+         </div>
+      </div>
+      <button (click)="addLair()" class="btn btn-primary" type="button">Add a Secret Lair</button>
+   </div>
+   <div class="checkbox">
+      <label class="center-block">
+      <input type="checkbox" formControlName="sidekick">I have a sidekick.
+      </label>
+   </div>
+   </form>
+   <p>PlaylistForm value: {{ playlistForm.value | json}}</p>
+   <!--
+   <h4>Name change log</h4>
+   <div *ngFor="let name of nameChangeLog">{{name}}</div>
+      <div class="form-group">
+          <label for="exampleInputFile">File input</label>
+          <input type="file" class="form-control-file" id="exampleInputFile" aria-describedby="fileHelp">
+          <small id="fileHelp" class="form-text text-muted">This is some placeholder block-level help text for the above input. It's a bit lighter and easily wraps to a new line.</small>
+        </div>
+        <fieldset class="form-group">
+          <legend>Radio buttons</legend>
+          <div *ngFor="let pow of powers">
+          <div class="form-check">
+            <label class="form-check-label">
+              <input type="radio" class="form-check-input" name="optionsRadios" id="optionsRadios1" value="option1" checked>
+              Option one is this and that&mdash;be sure to include why it's great
+            </label>
           </div>
-          </fieldset>
-        -->
-        <button type="submit" class="btn btn-success" [disabled]="!playlistForm.form.valid">Submit</button>
-        <button type="button" class="btn btn-default" (click)="newPlaylist(); playlistForm.reset()">Reset</button>
-      </form>
-    </div>
-<!--    
-    <div [hidden]="!submitted">
-      <h2>You submitted the following:</h2>
-      <div class="row">
-        <div class="col-xs-3">Name</div>
-        <div class="col-xs-9  pull-left">{{ model.name }}</div>
-      </div>
-      <div class="row">
-        <div class="col-xs-3">Alter Ego</div>
-        <div class="col-xs-9 pull-left">{{ model.name }}</div>
-      </div>
-      <div class="row">
-        <div class="col-xs-3">Power</div>
-        <div class="col-xs-9 pull-left">{{ model.tag }}</div>
-      </div>
-      <br>
-      <button class="btn btn-primary" (click)="submitted=false">Edit</button>
-    </div>
-  </div></div>
-<div class="modal-footer">
-  <button type="button" class="btn btn-outline-dark" (click)="activeModal.close('Close click')">Close</button>
+        </div>
+        </fieldset>
+      -->
 </div>
- -->
+<!--    
+   <div [hidden]="!submitted">
+     <h2>You submitted the following:</h2>
+     <div class="row">
+       <div class="col-xs-3">Name</div>
+       <div class="col-xs-9  pull-left">{{ model.name }}</div>
+     </div>
+     <div class="row">
+       <div class="col-xs-3">Alter Ego</div>
+       <div class="col-xs-9 pull-left">{{ model.name }}</div>
+     </div>
+     <div class="row">
+       <div class="col-xs-3">Power</div>
+       <div class="col-xs-9 pull-left">{{ model.tag }}</div>
+     </div>
+     <br>
+     <button class="btn btn-primary" (click)="submitted=false">Edit</button>
+   </div>
+   </div></div>
+   <div class="modal-footer">
+   <button type="button" class="btn btn-outline-dark" (click)="activeModal.close('Close click')">Close</button>
+   </div>
+   -->
+

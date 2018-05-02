@@ -9,7 +9,7 @@ import { PlaylistsService } from '../../playlists.service';
 import { TagsService } from '../../tags.service';
 import { AddComponent } from './components/add/add.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal/modal';
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule, ReactiveFormsModule} from '@angular/forms'; 
 
 @NgModule({
   imports: [
@@ -18,6 +18,7 @@ import { FormsModule } from '@angular/forms';
     StatModule,
     TagModule,
     FormsModule,
+    ReactiveFormsModule,
   ],
   declarations: [
     ConfigComponent,

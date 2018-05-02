@@ -17,22 +17,22 @@ export class PlaylistsService {
     playlists : Playlist[] = PLAYLISTS ;
     parent:String
 
-  getPlaylists (): Observable<Playlist[]> {
+  /*getPlaylists (): Observable<Playlist[]> {
     return this.db.collection('playlists').snapshotChanges().map(actions => {
       return actions.map(a => {
         const data = a.payload.doc.data() as Playlist;
         return  data;
       });
     })
-  }
-/*    getPlaylists (): Observable<Playlist[]> {
+  }*/
+    getPlaylists (): Observable<Playlist[]> {
       return of(this.playlists);
-     }*/
+     }
   
      addPlaylist (playlist: Playlist) {
-      playlist.id = this.db.createId();
-      this.db.collection('playlists').doc(playlist.id).set(Object.assign({}, playlist));
- //   this.playlists.push(playlist);
+ //      playlist.id = this.db.createId();
+ //     this.db.collection('playlists').doc(playlist.id).set(Object.assign({}, playlist));
+       this.playlists.push(playlist);
 
   }
     deletePlaylist (id : string):void {
