@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import {TagsService} from '../../../tags.service'
 
 
 @Component({
@@ -7,7 +8,8 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
     styleUrls: ['./stat.component.scss']
 })
 export class StatComponent implements OnInit {
-    @Input() bgClass: string;
+    [x: string]: any;
+    @Input() tagId: string;
     @Input() icon: string;
     @Input() name: string;
     @Input() count: number;
@@ -17,7 +19,7 @@ export class StatComponent implements OnInit {
     @Output() getIdToEdit = new EventEmitter();
 
     Counter = 0;
-    theme = "blue"
+    bgClass = "nocolor"
 
     delete() { // You can give any function name
         //When delete() button is clicked getId gets called and emit the value of this.label
@@ -34,7 +36,26 @@ export class StatComponent implements OnInit {
 
 
 
-    constructor() {}
+    constructor(private tagsService : TagsService) {
+    }
 
-    ngOnInit() {}
+    ngOnInit() {
+        this.getPlaylistColor(this.tagId)    
+    }
+
+    getPlaylistColor(tagId:string) {
+        return this.tagsService.getTagById(tagId).then(doc => {
+          if (doc.exists) {
+              const data =doc.data().color;
+              console.log(data);
+              this.bgClass = data;
+            } else {
+              console.log("No such document!");
+          }
+        }).catch(function(error) {
+            console.log("Error getting document:", error);
+        });    
+        
+      }
+    
 }

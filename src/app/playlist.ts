@@ -2,29 +2,27 @@ export class Playlist {
     id: string;
     name: string;
     description: string;
-    tag: number;//to edit to tagId and type string
+    tagId: string;//to edit to tagId and type string
     type: string;
     media : Media[];
-    constructor (id:string, name:string, description:string,tag:number,type:string ){
+    constructor (id:string, name:string, description:string,tagId:string,type:string ){
         this.id=id;
         this.name=name;
         this.description=description;
-        this.tag=tag;
+        this.tagId=tagId;
         this.type=type;
         this.media=[
-            {id:"s1", uriType:"URL", title:"firstsong",author:"beyonce feat jayz" ,uri:"music.com"},
-            {id:"s1", uriType:"URL", title:"firstsong",author:"beyonce feat jayz" ,uri:"music.com"},
+            {uriType:"URL", title:"firstsong",author:"beyonce feat jayz" ,uri:"music.com"},
+            {uriType:"URL", title:"firstsong",author:"beyonce feat jayz" ,uri:"music.com"},
           ]    }
   }
   
 export class Media {
-    id: string;
     uriType: string;
     title: string;
     author: string;
     uri: string;
-    constructor (id:string, uriType:string, title:string,author:string ,uri:string){
-        this.id=id;
+    constructor (uriType:string, title:string,author:string ,uri:string){
         this.uriType= uriType;
         this.title=title;
         this.author=author;//to edit to array

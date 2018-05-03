@@ -1,0 +1,48 @@
+
+<div class="modal-header">
+  <h4 class="modal-title">Hi there!</h4>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+  <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+<div class="container">
+  <div [hidden]="submitted">
+     <h1>Tag Form</h1>
+     <form [formGroup]="tagForm" (ngSubmit)="onSubmit()">
+     <div style="margin-bottom: 1em">
+        <button type="submit"
+           [disabled]="!tagForm.valid" class="btn btn-success">Save</button> &nbsp;
+        <button type="button" (click)="revert()"
+        [disabled]="tagForm.pristine" class="btn btn-danger">Revert</button>
+     </div>
+     <!-- Hero Detail Controls -->
+     <div class="form-group">
+        <label class="center-block">Name:
+        <input class="form-control" formControlName="name" required>
+        </label>
+     </div>
+
+     <div class="form-group">
+      <label class="center-block">Color:
+      <select class="form-control" formControlName="color">
+      <option *ngFor="let color of tagColors" [value]="color">{{color}}</option>
+      </select>
+      </label>
+   </div>
+
+     <div class="form-group">
+        <label class="center-block">Number:
+        <input type="number" class="form-control" formControlName="num" required>
+        </label>
+     </div>
+     <div class="form-group">
+      <label class="center-block">UUID:
+      <input class="form-control" formControlName="uuid" required>
+      </label>
+   </div>
+
+  </form>
+  <p>TagForm value: {{ tagForm.value | json}}</p>
+</div>
+

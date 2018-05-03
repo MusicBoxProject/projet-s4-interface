@@ -2,6 +2,7 @@
     <div class="col-lg-2">
         <button type="button" (click)="addPlaylist()" class="btn btn-outline-secondary ">+</button>
         <button type="button" class="btn btn-outline-secondary ">Sync</button>
+        <button type="button" (click)="addTag()" class="btn btn-outline-secondary ">+</button>
 
     </div>
   <div class="col-lg-8">
@@ -21,14 +22,14 @@
             <ng-template #playlistsBlock>
               <ul class="playlists">
                 <li *ngFor="let playlist of playlists">
-                    <app-stat [bgClass]="'blue'" [icon]="'fa-music'" [name]=playlist.name [count]="26" [label]=playlist.id [data]=playlist.description (getIdToDelete)='deletePlaylist($event)' (getIdToEdit)='editPlaylist($event)'></app-stat>
+                    <app-stat [tagId]=playlist.tagId [icon]="'fa-music'" [name]=playlist.name [count]="26" [label]=playlist.id [data]=playlist.description (getIdToDelete)='deletePlaylist($event)' (getIdToEdit)='editPlaylist($event)'></app-stat>
                   </li>
               </ul>      
             </ng-template>
             <ng-template #tagsBlock>
               <ul class="tags">
                 <li *ngFor="let tag of tags">
-                    <app-tag [bgClass]=tag.color [icon]="'fa-tag'" [name]=tag.name [count]="26" [label]=tag.id [data]=tag.color (getIdToDelete)='deletePlaylist($event)' (getIdToEdit)='editPlaylist($event)'></app-tag>
+                    <app-tag [bgClass]=tag.color [icon]="'fa-tag'" [name]=tag.name [count]=tag.num [label]=tag.id [data]=tag.color (getIdToDelete)='deleteTag($event)' (getIdToEdit)='editTag($event)'></app-tag>
                   </li>
               </ul>      
             </ng-template>

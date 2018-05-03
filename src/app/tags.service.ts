@@ -15,22 +15,35 @@ export class TagsService {
   tags : Tag[] = TAGS ;
   parent:String
 
-/*  getPlaylists (): Observable<Playlist[]> {
-  return this.db.collection('playlists').snapshotChanges().map(actions => {
-    return actions.map(a => {
-      const data = a.payload.doc.data() as Playlist;
-      return  data;
-    });
-  })*/
+
 
   getTags (): Observable<Tag[]> {
-    return of(this.tags);
-   }
+    return this.db.collection('tags').snapshotChanges().map(actions => {
+      return actions.map(a => {
+        const data = a.payload.doc.data() as Tag;
+        return  data;
+      });
+    })   
+  }
+
+  /*getTags (): Observable<Tag[]> {
+    return of (this.tags);
+
+  }*/
+
+  getTagById (id:string) : any {
+  /*  return new Promise( (resolve, reject) => {
+      const doc ={exists:true,data:()=>this.tags.find(tag => tag.id==id)};
+      resolve(doc);
+    }); */
+    return this.db.collection('tags').doc(id).ref.get()
+
+  }
 
    addTag (tag: Tag) {
     tag.id = this.db.createId();
     this.db.collection('tags').doc(tag.id).set(Object.assign({}, tag));
-//   this.playlists.push(playlist);
+//   this.tags.push(playlist);
 
 }
   deleteTag (id : string):void {
@@ -43,21 +56,6 @@ export class TagsService {
 
   editTag (tag : Tag) : void {
     this.db.collection('tags').doc(tag.id).set(Object.assign({}, tag));
-
-
-    /*this.db.collection("cities").doc(playlist.id)
-    .update({
-    tag: 1
-     })
-    .then(function() {
-    console.log("Document successfully updated!");
-    })
-    .catch(function(error) {
-    // The document probably doesn't exist.
-    console.error("Error updating document: ", error);
-    });
-    this.playlists[this.indexOf(playlist.id,this.playlists)]=playlist
-    */
   }
 
   indexOf (id:string,arr: any[]) : number {

@@ -14,7 +14,7 @@
       <form [formGroup]="playlistForm" (ngSubmit)="onSubmit()">
       <div style="margin-bottom: 1em">
          <button type="submit"
-            [disabled]="playlistForm.pristine" class="btn btn-success">Save</button> &nbsp;
+            [disabled]="!playlistForm.valid" class="btn btn-success">Save</button> &nbsp;
          <button type="button" (click)="revert()"
          [disabled]="playlistForm.pristine" class="btn btn-danger">Revert</button>
       </div>
@@ -26,13 +26,13 @@
       </div>
       <div class="form-group">
          <label class="center-block">Description:
-         <input class="form-control" formControlName="description" required>
+            <textarea rows="5" class="form-control" formControlName="description" placeholder="Add new decription"></textarea>         
          </label>
       </div>
       <span class="center-block">Tag:</span> 
       <div class="form-group form-row radio">
          <div *ngFor="let tag of tags">
-            <label class="center-block"><input type="radio" formControlName="tag" value={{tag}}>{{tag}}</label>
+            <label class="center-block"><input type="radio" formControlName="tagId" value={{tag.id}}>{{tag.num}}</label>
          </div>
       </div>
       <div class="form-group">
@@ -45,7 +45,7 @@
       <div formArrayName="secretLairs" class="well well-lg">
          <div *ngFor="let media of secretLairs.controls; let i=index" [formGroupName]="i" >
          <!-- The repeated address template -->
-         <h4>Media #{{i + 1}}</h4>
+         Media #{{i + 1}}
          <div style="margin-left: 1em;">
             <div class=form-row>
                <div class="form-group col-2">
@@ -60,11 +60,10 @@
                   <input class="form-control" formControlName="author" placeholder="Author">
                </div>
                <div class="form-group col-2">
-                  <input class="form-control" formControlName="uri" placeholder="{{playlistForm.value.uriType}}">
+                  <input class="form-control" formControlName="uri" placeholder="{{media.value.uriType}}">
                </div>
                <div class="col-2"> 
-                  <button type="button" (click)="deleteLair(i)"
-                  [disabled]="playlistForm.pristine" class="btn btn-danger">Revert</button>
+                  <button type="button" (click)="deleteLair(i)" class="btn btn-danger">Delete</button>
                </div>
             </div>
             <br>
@@ -72,12 +71,12 @@
          </div>
       </div>
       <button (click)="addLair()" class="btn btn-primary" type="button">Add a Secret Lair</button>
-   </div>
-   <div class="checkbox">
+  </div>
+<!--    <div class="checkbox">
       <label class="center-block">
       <input type="checkbox" formControlName="sidekick">I have a sidekick.
       </label>
-   </div>
+   </div>-->
    </form>
    <p>PlaylistForm value: {{ playlistForm.value | json}}</p>
    <!--

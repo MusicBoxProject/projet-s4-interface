@@ -5,6 +5,7 @@ import { TagsService } from '../../tags.service'
 import {Tag} from '../../tag'
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {AddComponent } from './components/add/add.component';
+import { AddTagComponent } from './components/add-tag/add-tag.component';
 
 @Component({
   selector: 'app-config',
@@ -16,6 +17,7 @@ export class ConfigComponent implements OnInit {
   closeResult: string;
   playlists : Playlist[];
   selectedPlaylist : Playlist;
+  selectedTag : Tag;
   isEdit : boolean ;
 
   tags : Tag[];
@@ -24,16 +26,17 @@ export class ConfigComponent implements OnInit {
 
   getPlaylists(): void {
     this.playlistsService.getPlaylists()
-        .subscribe(playlists => this.playlists=playlists);
+        .subscribe(playlists => {this.playlists=playlists;});
 
   }
 
-  gettags(): void {
+  getTags(): void {
     this.tagsService.getTags()
         .subscribe(tags => this.tags=tags);
         
 
   }
+
 
   deletePlaylist(id): void{
     this.playlistsService.deletePlaylist(id)
@@ -48,17 +51,33 @@ export class ConfigComponent implements OnInit {
   }
   addPlaylist(): void {
     this.isEdit = false;
-    this.selectedPlaylist = new Playlist("18","Playlist name","Add Description",3,"Music");
+    this.selectedPlaylist = new Playlist("18","Playlist name","Add Description","3","Music");
     this.open();
       
   }
 
+  addTag():void {
+    this.isEdit = false;
+    this.selectedTag = new Tag("0","tag1","purple",99,"uuid");
+    this.openTag();
+
+  }
+  editTag(id): void{
+    this.isEdit=true;
+    this.selectedTag = this.tags[this.indexOf(id,this.tags)]
+    this.openTag();
+
+  }
+
+  deleteTag(id): void{
+    this.tagsService.deleteTag(id)
+  }
 
   constructor(private modalService: NgbModal ,private playlistsService: PlaylistsService, private tagsService : TagsService) {     }
 
   ngOnInit() {
     this.getPlaylists();
-    this.gettags();
+    this.getTags();
     
   }
   open() {
@@ -68,6 +87,14 @@ export class ConfigComponent implements OnInit {
     modalRef.componentInstance.model = this.selectedPlaylist; 
 
  }
+
+ openTag() {
+
+  const modalRef = this.modalService.open(AddTagComponent);
+  modalRef.componentInstance.isEdit = this.isEdit;
+  modalRef.componentInstance.model = this.selectedTag; 
+
+}
 
  indexOf (id:string,arr: any[]) : number {
   let k : number =0;

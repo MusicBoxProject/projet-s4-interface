@@ -1,34 +1,43 @@
 import { Component, OnInit,Output,Input, EventEmitter } from '@angular/core';
 import {Playlist, Media,types,uriTypes} from '../../../../playlist'
 import { PlaylistsService } from '../../../../playlists.service'
-import { Address, Hero, states,heroes } from '../../../../data-model';
+import { TagsService } from '../../../../tags.service'
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {FormBuilder, FormGroup, FormArray} from "@angular/forms"
 import { OnChanges } from '@angular/core/src/metadata/lifecycle_hooks';
+import { Observable } from 'rxjs/Observable';
+import { Tag } from '../../../../tag';
 @Component({
   selector: 'app-add',
   templateUrl: './add.component.html',
   styleUrls: ['./add.component.scss']
 })
 export class AddComponent implements OnChanges {
-  @Input() model =new Playlist("18","Name your playlist","Add Description",3,"Music");
+  @Input() model =new Playlist("18","Name your playlist","Add Description","3","Music");
   @Input() isEdit: boolean ;
   @Output() getPlaylist = new EventEmitter();
 
   
   playlistForm: FormGroup;
   nameChangeLog: string[] = [];
-  states = states;
 
-  tags = [1,2,3,4,5];
+  tags: Tag[];
+
   types = types;
   uriTypes= uriTypes;
  
  
   submitted = false;
- 
-  constructor(private playlistsService: PlaylistsService,public activeModal: NgbActiveModal,private fb: FormBuilder) {
+
+  getTags(): void{
+     let arr: number[];
+     this.tagsService.getTags()
+    .subscribe(tags => this.tags=tags)
+  }
+
+  constructor(private playlistsService: PlaylistsService,private tagsService: TagsService,public activeModal: NgbActiveModal,private fb: FormBuilder) {
     console.log(this.model);
+    this.getTags()
     this.createForm();
     this.logNameChange();
    }
@@ -37,7 +46,7 @@ export class AddComponent implements OnChanges {
     this.playlistForm = this.fb.group({
       name: '',
       description: '',
-      tag:0,
+      tagId:"0",
       type:'',
       secretLairs: this.fb.array([]),
       sidekick:'',
@@ -54,7 +63,7 @@ export class AddComponent implements OnChanges {
       
       name: this.model.name,
       description: this.model.description,
-      tag:this.model.tag,
+      tagId:this.model.tagId,
       type:this.model.type,
 
     });
@@ -64,15 +73,29 @@ export class AddComponent implements OnChanges {
   get secretLairs(): FormArray {
     return this.playlistForm.get('secretLairs') as FormArray;
   };
-
+//  initializing the media array 
   setMedia(medias: Media[]) {
-    const mediaFGs = medias.map(media => this.fb.group(media));
+    const mediaFGs = medias.map(media => this.fb.group(
+      {uriType:media.uriType, 
+      title:media.title,
+      author:media.author,
+      uri:media.uri,
+      confirmed:true,  
+      }
+    ));
     const mediaFormArray = this.fb.array(mediaFGs);
     this.playlistForm.setControl('secretLairs', mediaFormArray);
   }
 
   addLair() {
-    this.secretLairs.push(this.fb.group(new Media('0','','','','')));
+//    this.secretLairs.push(this.fb.group(new Media('','','','')));
+    this.secretLairs.push(this.fb.group({
+      uriType:"", 
+      title:"",
+      author:"",
+      uri:"",
+      confirmed:false,
+    }));
   }
 
   deleteLair(i:number) {
@@ -81,9 +104,19 @@ export class AddComponent implements OnChanges {
 
   onSubmit() {
     this.model = this.prepareSavePlaylist();
+    this.submitted = true;
+          //When delete() button is clicked getId gets called and emit the value of this.label
+        //as an event the config componenet intercept this event
+  if (this.isEdit){
     console.log(this.model)
-    this.playlistsService.addPlaylist(this.model)//.subscribe(/* error handling */);
-    this.rebuildForm();
+    this.playlistsService.editPlaylist(this.model);
+  }
+    else {
+      this.playlistsService.addPlaylist(this.model);
+
+        }
+            
+      this.rebuildForm();
   }
 
   prepareSavePlaylist(): Playlist {
@@ -91,8 +124,16 @@ export class AddComponent implements OnChanges {
 
     // deep copy of form model lairs
     const secretLairsDeepCopy: Media[] = formModel.secretLairs.map(
-      (media: Media) => Object.assign({}, media)
-    );
+//      (media: Media) => Object.assign({}, media)
+(media: Media) => { const doc=
+  {uriType:media.uriType, 
+  title:media.title,
+  author:media.author,
+  uri:media.uri,  
+  };
+  return doc;
+}
+);
 
     // return new `Hero` object containing a combination of original hero value(s)
     // and deep copies of changed form model values
@@ -100,7 +141,7 @@ export class AddComponent implements OnChanges {
       id: this.model.id,
       name: formModel.name as string,
       description: formModel.description as string,
-      tag: formModel.tag as number,
+      tagId: formModel.tagId as string,
       type: formModel.type as string,
 
       // addresses: formModel.secretLairs // <-- bad!
@@ -140,7 +181,7 @@ if (this.isEdit){
 
 
   ngOnInit() {
-
+    this.rebuildForm();
   }
 
 }

@@ -89,12 +89,18 @@
     .card-header{
         margin: 3px;
         flex: 2;
+        flex-direction: row;
+        flex-wrap: wrap;
         background-color: 100%;
         border-radius: $border-radius-base;
         background-color: $gray-color;
 
         .title{
             color: $white-color;
+            font-size: 2em;
+            font-weight: bold;
+            margin-left: auto;
+            margin-top: -5px;
         }
         .category{
             margin-bottom: 0;
