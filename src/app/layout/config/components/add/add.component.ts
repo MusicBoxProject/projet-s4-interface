@@ -101,6 +101,9 @@ export class AddComponent implements OnChanges {
   deleteLair(i:number) {
     this.secretLairs.removeAt(i);
   }
+  editLair(media:any) {
+    media.value.confirmed=!media.value.confirmed;
+  }
 
   onSubmit() {
     this.model = this.prepareSavePlaylist();
@@ -117,6 +120,7 @@ export class AddComponent implements OnChanges {
         }
             
       this.rebuildForm();
+      this.activeModal.dismiss('Cross click')
   }
 
   prepareSavePlaylist(): Playlist {

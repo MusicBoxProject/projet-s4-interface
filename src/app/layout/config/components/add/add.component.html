@@ -1,40 +1,51 @@
 
 
 <!--{{diagnostic}}-->
-<div class="modal-header">
-   <h4 class="modal-title">Hi there!</h4>
-   <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
-   <span aria-hidden="true">&times;</span>
-   </button>
-</div>
 <div class="modal-body">
-<div class="container">
+  <div class="container">
    <div [hidden]="submitted">
       <h1>Playlist Form</h1>
-      <form [formGroup]="playlistForm" (ngSubmit)="onSubmit()">
-      <div style="margin-bottom: 1em">
+    <form [formGroup]="playlistForm" (ngSubmit)="onSubmit()">
+      <div class="row">
          <button type="submit"
             [disabled]="!playlistForm.valid" class="btn btn-success">Save</button> &nbsp;
          <button type="button" (click)="revert()"
          [disabled]="playlistForm.pristine" class="btn btn-danger">Revert</button>
       </div>
-      <!-- Hero Detail Controls -->
+      <!-- Playlist Detail Controls -->
+      <div class="row">
+        <div class="form1 col-6">
       <div class="form-group">
          <label class="center-block">Name:
          <input class="form-control" formControlName="name" required>
          </label>
       </div>
       <div class="form-group">
+          <label class="center-block">Tag:
+          <select class="form-control" formControlName="tagId">
+          <option *ngFor="let tag of tags" [value]="tag.id">
+            <li class="tagin" ></li>
+            <li color="red">{{tag.num}}</li>
+          </option>
+          </select>
+          </label>
+       </div>
+      </div>
+      <div class="form2 col-6">
+      <div class="form-group description">
          <label class="center-block">Description:
             <textarea rows="5" class="form-control" formControlName="description" placeholder="Add new decription"></textarea>         
          </label>
       </div>
-      <span class="center-block">Tag:</span> 
+    </div>
+<!--      <span class="center-block">Tag:</span> 
       <div class="form-group form-row radio">
          <div *ngFor="let tag of tags">
             <label class="center-block"><input type="radio" formControlName="tagId" value={{tag.id}}>{{tag.num}}</label>
          </div>
-      </div>
+      </div>-->
+
+    </div>
       <div class="form-group">
          <label class="center-block">Type:
          <select class="form-control" formControlName="type">
@@ -45,8 +56,17 @@
       <div formArrayName="secretLairs" class="well well-lg">
          <div *ngFor="let media of secretLairs.controls; let i=index" [formGroupName]="i" >
          <!-- The repeated address template -->
-         Media #{{i + 1}}
-         <div style="margin-left: 1em;">
+         <div *ngIf="(media.value.confirmed===true);then confirmedBlock else notConfirmedBlock"></div>
+        <div class="row">
+         <ng-template #notConfirmedBlock>
+          {{i}}
+          <button type="button" (click)="editLair(media)" class="btn btn-primary">Delete</button>
+
+        </ng-template>
+        </div>  
+        <div class="row">
+         <ng-template #confirmedBlock>
+          <div style="margin-left: 1em;">
             <div class=form-row>
                <div class="form-group col-2">
                   <select class="form-control" formControlName="uriType">
@@ -64,11 +84,14 @@
                </div>
                <div class="col-2"> 
                   <button type="button" (click)="deleteLair(i)" class="btn btn-danger">Delete</button>
-               </div>
+                  <button type="button" (click)="editLair(media)" class="btn btn-primary">Delete</button>
+                </div>
             </div>
             <br>
             <!-- End of the repeated address template -->
          </div>
+        </ng-template>
+        </div>
       </div>
       <button (click)="addLair()" class="btn btn-primary" type="button">Add a Secret Lair</button>
   </div>

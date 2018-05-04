@@ -16,6 +16,7 @@
     min-width: 25%;
   }
 
+  .well{
   .form-row {
     display: flex;
     flex-direction: row;
@@ -41,7 +42,13 @@
       background-color: #42A948;
         
     }
+    
 
   }
+}
+
+.description{
+  width: 100%;
+}
 
   
