@@ -58,13 +58,13 @@ export class ConfigComponent implements OnInit {
 
   addTag():void {
     this.isEdit = false;
-    this.selectedTag = new Tag("0","tag1","purple",99,"uuid");
+    this.selectedTag = new Tag("0","","",Math.floor(Math.random() * 100),"");
     this.openTag();
 
   }
   editTag(id): void{
     this.isEdit=true;
-    this.selectedTag = this.tags[this.indexOf(id,this.tags)]
+    this.selectedTag = this.tags.find(tag => tag.id==id)
     this.openTag();
 
   }
