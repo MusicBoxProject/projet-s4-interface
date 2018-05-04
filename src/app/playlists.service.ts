@@ -8,6 +8,8 @@ import { PLAYLISTS } from './playlist-mock';
 import { AngularFirestore,AngularFirestoreCollection } from 'angularfire2/firestore';
 import { QuerySnapshot } from '@firebase/firestore-types';
 import { query } from '@angular/core/src/render3/instructions';
+import {TagsService} from './tags.service'
+
 
 
 @Injectable()
@@ -25,6 +27,7 @@ export class PlaylistsService {
       });
     })
   }
+
   /*  getPlaylists (): Observable<Playlist[]> {
       return of(this.playlists);
      }*/
@@ -32,9 +35,30 @@ export class PlaylistsService {
      addPlaylist (playlist: Playlist) {
        playlist.id = this.db.createId();
        this.db.collection('playlists').doc(playlist.id).set(Object.assign({}, playlist));
-       this.playlists.push(playlist);
-
+       this.checkTag(playlist.tagId,playlist.id);
+       //this.playlists.push(playlist);
+    
   }
+
+  editPlaylist (playlist : Playlist) : void {
+    this.db.collection('playlists').doc(playlist.id).set(Object.assign({}, playlist));
+    this.checkTag(playlist.tagId,playlist.id);
+
+    /*this.db.collection("cities").doc(playlist.id)
+    .update({
+    tag: 1
+     })
+    .then(function() {
+    console.log("Document successfully updated!");
+    })
+    .catch(function(error) {
+    // The document probably doesn't exist.
+    console.error("Error updating document: ", error);
+    });
+    this.playlists[this.indexOf(playlist.id,this.playlists)]=playlist
+    */
+  }
+
     deletePlaylist (id : string):void {
       this.db.collection("playlists").doc(id).delete().then(function() {
         console.log("Document successfully deleted!");
@@ -43,24 +67,11 @@ export class PlaylistsService {
     });
   }
 
-    editPlaylist (playlist : Playlist) : void {
-      this.db.collection('playlists').doc(playlist.id).set(Object.assign({}, playlist));
 
+  checkTag (tagId:string,playlistId:string){
+    this.tagsService.checkTag(tagId,playlistId); 
+  }
 
-      /*this.db.collection("cities").doc(playlist.id)
-      .update({
-      tag: 1
-       })
-      .then(function() {
-      console.log("Document successfully updated!");
-      })
-      .catch(function(error) {
-      // The document probably doesn't exist.
-      console.error("Error updating document: ", error);
-      });
-      this.playlists[this.indexOf(playlist.id,this.playlists)]=playlist
-      */
-    }
 
     indexOf (id:string,arr: any[]) : number {
       let k : number =0;
@@ -73,7 +84,7 @@ export class PlaylistsService {
       return -1
     }
   
-  constructor(private db : AngularFirestore) {
+  constructor(private db : AngularFirestore,private tagsService : TagsService) {
   //   //ref makes it a collection reference
   //     db.collection('playlists').ref.get().then(querySnapshot =>
   //       console.log("query: ",querySnapshot.docs.length))

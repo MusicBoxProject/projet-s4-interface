@@ -1,4 +1,4 @@
-import { Component, OnInit,Output,Input, EventEmitter } from '@angular/core';
+import { Component, OnInit,Output,Input, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import {Playlist, Media,types,uriTypes} from '../../../../playlist'
 import { PlaylistsService } from '../../../../playlists.service'
 import { TagsService } from '../../../../tags.service'
@@ -13,7 +13,7 @@ import { Tag } from '../../../../tag';
   styleUrls: ['./add.component.scss']
 })
 export class AddComponent implements OnChanges {
-  @Input() model =new Playlist("18","Name your playlist","Add Description","3","Music");
+  @Input() model =new Playlist("18","Name your playlist","Add Description","Music");
   @Input() isEdit: boolean ;
   @Output() getPlaylist = new EventEmitter();
 
@@ -35,8 +35,7 @@ export class AddComponent implements OnChanges {
     .subscribe(tags => this.tags=tags)
   }
 
-  constructor(private playlistsService: PlaylistsService,private tagsService: TagsService,public activeModal: NgbActiveModal,private fb: FormBuilder) {
-    console.log(this.model);
+  constructor(private cdRef: ChangeDetectorRef, private playlistsService: PlaylistsService,private tagsService: TagsService,public activeModal: NgbActiveModal,private fb: FormBuilder) {
     this.getTags()
     this.createForm();
     this.logNameChange();
@@ -57,7 +56,6 @@ export class AddComponent implements OnChanges {
   }
 
   rebuildForm() {
-    console.log(this.model.name);
 
     this.playlistForm.reset({
       
@@ -111,7 +109,6 @@ export class AddComponent implements OnChanges {
           //When delete() button is clicked getId gets called and emit the value of this.label
         //as an event the config componenet intercept this event
   if (this.isEdit){
-    console.log(this.model)
     this.playlistsService.editPlaylist(this.model);
   }
     else {

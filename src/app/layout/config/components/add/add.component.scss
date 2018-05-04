@@ -5,16 +5,10 @@
   .ng-invalid:not(form)  {
     border-left: 5px solid #a94442; /* red */
   }
+  .ul,li{
+    list-style-type: none;
+  }
 
-  .grid {
-    display: flex;
-    flex-wrap: wrap;
-  }
-  
-  .grid-item {
-    flex-grow: 1;
-    min-width: 25%;
-  }
 
   .well{
   .form-row {
@@ -51,4 +45,107 @@
   width: 100%;
 }
 
-  
+.medias {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  margin-left: -10px;
+  width: 100%;
+ .confirmed {
+  flex-grow: 1;
+  min-width: 25%;
+  display: flex;
+  border-radius: 5%;
+  padding-left: 15px;
+  flex-direction: row;
+  margin-bottom: 5px;
+  align-items: center;
+    .media-title{
+      color: wheat;
+      font-size: 1em;
+      font-weight: bold;
+      margin-left: auto;
+      padding-left: 5px;
+
+    }
+
+    .media-buttons {
+      display: flex;
+      flex-direction: column;
+      margin-left: auto;
+      justify-content: space-between;
+      background-color:gray;
+      cursor: pointer; /* Pointer/hand icon */
+          button {
+              display: flex;
+              background-color: transparent;
+              background: none;
+              border: 1px solid brightness(80%); /* Green border */
+              color:white; /* White text */        
+              justify-content: center;
+          }
+          button:hover {
+              filter: brightness(60%);
+            }
+  }
+
+}
+ .notConfirmed {
+  flex-grow: 1;
+  min-width: 100%;
+  margin: 0 0 0 0;
+  width: 100%;
+  padding-right:0;
+  padding-left:0;
+  .form-row {
+    display: flex;
+    flex-direction: row;
+
+    .form-group {
+      margin: 0 0 0 0;
+      width: 100%;
+      padding-right:0;
+      padding-left:0;
+
+
+      input{
+        border-radius: 0;
+
+      }
+      
+    }
+    .input-group-text {
+      margin: 0 0 0 0;
+      width: 100%;
+      padding-right:0;
+      padding-left:0;
+      background-color: #42A948;
+        
+    }
+    
+
+  }
+  .media-buttons {
+    display: flex;
+    flex-direction: row;
+    margin-left: auto;
+    background-color: white;
+    justify-content: space-between;
+    cursor: pointer; /* Pointer/hand icon */
+        button {
+            display: flex;
+            background-color: transparent;
+            background: none;
+            border: 1px solid brightness(80%); /* Green border */
+            color:grey; /* White text */        
+            justify-content: center;
+        }
+        button:hover {
+            filter: brightness(80%);
+          }
+}
+
+ }
+
+
+}

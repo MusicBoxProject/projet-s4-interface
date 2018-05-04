@@ -44,13 +44,13 @@ export class StatComponent implements OnInit {
     }
 
     getPlaylistColor(tagId:string) {
-        return this.tagsService.getTagById(tagId).then(doc => {
+         this.tagsService.getTagById(tagId).then(doc => {
           if (doc.exists) {
               const data =doc.data().color;
               console.log(data);
               this.bgClass = data;
             } else {
-              console.log("No such document!");
+              console.log("No Color!");
           }
         }).catch(function(error) {
             console.log("Error getting document:", error);

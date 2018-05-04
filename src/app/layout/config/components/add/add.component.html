@@ -2,16 +2,14 @@
 
 <!--{{diagnostic}}-->
 <div class="modal-body">
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+        </button>      
+
   <div class="container">
    <div [hidden]="submitted">
       <h1>Playlist Form</h1>
     <form [formGroup]="playlistForm" (ngSubmit)="onSubmit()">
-      <div class="row">
-         <button type="submit"
-            [disabled]="!playlistForm.valid" class="btn btn-success">Save</button> &nbsp;
-         <button type="button" (click)="revert()"
-         [disabled]="playlistForm.pristine" class="btn btn-danger">Revert</button>
-      </div>
       <!-- Playlist Detail Controls -->
       <div class="row">
         <div class="form1 col-6">
@@ -23,9 +21,12 @@
       <div class="form-group">
           <label class="center-block">Tag:
           <select class="form-control" formControlName="tagId">
-          <option *ngFor="let tag of tags" [value]="tag.id">
+            <option  value="No Tag">
+                <li color="red">No Tag</li>
+              </option>    
+              <option *ngFor="let tag of tags" [value]="tag.id">
             <li class="tagin" ></li>
-            <li color="red">{{tag.num}}</li>
+            <li color="red">{{tag.color}}</li>
           </option>
           </select>
           </label>
@@ -48,25 +49,34 @@
     </div>
       <div class="form-group">
          <label class="center-block">Type:
-         <select class="form-control" formControlName="type">
+         <select class="form-control" formControlName="type"> 
          <option *ngFor="let type of types" [value]="type">{{type}}</option>
          </select>
          </label>
       </div>
-      <div formArrayName="secretLairs" class="well well-lg">
-         <div *ngFor="let media of secretLairs.controls; let i=index" [formGroupName]="i" >
+      <ul formArrayName="secretLairs" class="medias bg-light">
+         <li *ngFor="let media of secretLairs.controls; let i=index" [formGroupName]="i" >
          <!-- The repeated address template -->
          <div *ngIf="(media.value.confirmed===true);then confirmedBlock else notConfirmedBlock"></div>
-        <div class="row">
-         <ng-template #notConfirmedBlock>
-          {{i}}
-          <button type="button" (click)="editLair(media)" class="btn btn-primary">Delete</button>
-
-        </ng-template>
-        </div>  
-        <div class="row">
          <ng-template #confirmedBlock>
-          <div style="margin-left: 1em;">
+          <div class="confirmed bg-secondary">
+              <div class="media-title">            
+              <span class="text-white ">{{media.value.uriType}}
+                <br>{{media.value.title}}</span>
+              </div> 
+              <div class="media-buttons">
+              <button type="button" (click)="editLair(media)" class="btn">
+                  <span class="fa fa-pencil fa-xs"></span>
+              </button>
+              <button type="button" (click)="deleteLair(i)" class="btn">
+                  <span class="fa fa-trash fa-xs"></span> 
+              </button>
+            </div>  
+
+            </div>  
+        </ng-template>
+        <div class="notConfirmed">
+         <div [hidden]="media.value.confirmed">
             <div class=form-row>
                <div class="form-group col-2">
                   <select class="form-control" formControlName="uriType">
@@ -82,26 +92,35 @@
                <div class="form-group col-2">
                   <input class="form-control" formControlName="uri" placeholder="{{media.value.uriType}}">
                </div>
-               <div class="col-2"> 
-                  <button type="button" (click)="deleteLair(i)" class="btn btn-danger">Delete</button>
-                  <button type="button" (click)="editLair(media)" class="btn btn-primary">Delete</button>
+               <div class="col-2 media-buttons"> 
+                <button type="button" (click)="editLair(media)" class="btn">
+                  <span class="fa fa-check fa-xs"></span>
+              </button>
+              <button type="button" (click)="deleteLair(i)" class="btn">
+                  <span class="fa fa-trash fa-xs"></span> 
+              </button>
                 </div>
             </div>
             <br>
             <!-- End of the repeated address template -->
-         </div>
-        </ng-template>
         </div>
-      </div>
-      <button (click)="addLair()" class="btn btn-primary" type="button">Add a Secret Lair</button>
-  </div>
+        </div>
+      </li>
+      <br><button (click)="addLair()" class="btn btn-primary" type="button"><span class="fa fa-plus fa-3x"></span></button>
+    </ul>
 <!--    <div class="checkbox">
       <label class="center-block">
       <input type="checkbox" formControlName="sidekick">I have a sidekick.
       </label>
    </div>-->
+   <div class="row">
+      <button type="submit"
+         [disabled]="!playlistForm.valid" class="btn btn-success">Save</button> &nbsp;
+      <button type="button" (click)="revert()"
+      [disabled]="playlistForm.pristine" class="btn btn-danger">Reset</button>
+   </div>
    </form>
-   <p>PlaylistForm value: {{ playlistForm.value | json}}</p>
+  <!-- <p>PlaylistForm value: {{ playlistForm.value | json}}</p>-->
    <!--
    <h4>Name change log</h4>
    <div *ngFor="let name of nameChangeLog">{{name}}</div>

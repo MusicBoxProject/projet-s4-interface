@@ -51,7 +51,7 @@ export class ConfigComponent implements OnInit {
   }
   addPlaylist(): void {
     this.isEdit = false;
-    this.selectedPlaylist = new Playlist("18","Playlist name","Add Description","3","Music");
+    this.selectedPlaylist = new Playlist("18","Playlist name","Add Description","Music");
     this.open();
       
   }
@@ -107,7 +107,6 @@ export class ConfigComponent implements OnInit {
   return -1
 }
   changeList (b:boolean) {
-    console.log("clicked")
     this.isPlaylistList = b; 
   }
 

@@ -23,7 +23,6 @@ export class AddTagComponent implements OnChanges {
   submitted = false;
  
   constructor(private tagsService: TagsService,public activeModal: NgbActiveModal,private fb: FormBuilder) {
-    console.log(this.model);
     this.createForm();
     this.logNameChange();
    }
@@ -33,7 +32,8 @@ export class AddTagComponent implements OnChanges {
       name: '',
       color: '',
       num:0,
-      uuid:''
+      uuid:'',
+      playlistId:''
     });
   }
   ngOnChanges() {
@@ -41,14 +41,13 @@ export class AddTagComponent implements OnChanges {
   }
 
   rebuildForm() {
-    console.log(this.model.name);
-
     this.tagForm.reset({
       
       name: this.model.name,
       color: this.model.color,
       num:this.model.num,
       uuid:this.model.uuid,
+      playlistId:this.model.playlistId
 
     });
   }
@@ -64,7 +63,6 @@ export class AddTagComponent implements OnChanges {
         //as an event the config componenet intercept this event
   if (this.isEdit){
     this.model.num=Number(this.model.num)
-    console.log(this.model)
     this.tagsService.editTag(this.model);
   }
     else {
@@ -74,6 +72,7 @@ export class AddTagComponent implements OnChanges {
         }
             
       this.rebuildForm();
+      this.activeModal.dismiss('Cross click')
   }
 
   prepareSavePlaylist(): Tag {
@@ -85,6 +84,7 @@ export class AddTagComponent implements OnChanges {
       color: formModel.color as string,
       num: formModel.num as number,
       uuid: formModel.uuid as string,
+      playlistId: this.model.playlistId
 
     };
     return saveTag;
