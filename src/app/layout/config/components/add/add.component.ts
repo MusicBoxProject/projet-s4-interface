@@ -39,6 +39,7 @@ export class AddComponent implements OnChanges {
     this.getTags()
     this.createForm();
     this.logNameChange();
+    this.logTypeChange();
    }
 
    createForm() {
@@ -144,7 +145,6 @@ export class AddComponent implements OnChanges {
       description: formModel.description as string,
       tagId: formModel.tagId as string,
       type: formModel.type as string,
-
       // addresses: formModel.secretLairs // <-- bad!
       media: secretLairsDeepCopy
     };
@@ -159,6 +159,16 @@ export class AddComponent implements OnChanges {
       (value: string) => this.nameChangeLog.push(value)
     );
   }
+
+  logTypeChange() {
+    const typeControl = this.playlistForm.get('type');
+    typeControl.valueChanges.forEach(
+      (value: string) => {
+        console.log('change')
+        this.setMedia([])}
+    );
+  }
+
 /*  onSubmit() { this.submitted = true;
           //When delete() button is clicked getId gets called and emit the value of this.label
         //as an event the config componenet intercept this event
@@ -183,6 +193,38 @@ if (this.isEdit){
 
   ngOnInit() {
     this.rebuildForm();
+    console.log(this.model)
+
   }
+
+  getUriTypes(type: string) : String[] {
+    if (type=='Music') {
+        return ['URL','PATH']
+    }
+   else if (type=='Podcast') {
+      return ['RSS']
+  }
+  else if (type=='Story') {
+      return ['URL','PATH']
+  }
+  else{
+    return []
+  }
+
+  }
+
+  isAddPossible() : boolean{
+    let type =this.playlistForm.value.type
+    if (type=='Music'){
+    return true
+  }
+  else if ((type=='Podcast')||(type=='Story')){
+    return (this.secretLairs.length==0)
+  }
+  else {
+    return false
+  }
+  }
+
 
 }

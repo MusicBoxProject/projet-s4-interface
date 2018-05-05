@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-lg-2">
         <div class="add-btn">
-            <button type="button" class="btn btn-outline-secondary ">Sync</button>
+            <button type="button" (click)="download()" class="btn btn-outline-secondary ">Sync</button>
           <button type="button" (click)="addPlaylist()" class="btn btn-outline-secondary ">Add Playlist</button>
         <button type="button" (click)="addTag()" class="btn btn-outline-secondary ">Add Tag</button>
       </div>
@@ -24,7 +24,7 @@
             <ng-template #playlistsBlock>
               <ul class="playlists">
                 <li *ngFor="let playlist of playlists">
-                    <app-stat [tagId]=playlist.tagId [icon]="'fa-music'" [name]=playlist.name [count]="26" [label]=playlist.id [data]=playlist.description (getIdToDelete)='deletePlaylist($event)' (getIdToEdit)='editPlaylist($event)'></app-stat>
+                    <app-stat [tagId]=playlist.tagId [icon]=getIcon(playlist.type) [name]=playlist.name [count]="26" [label]=playlist.id [data]=playlist.description (getIdToDelete)='deletePlaylist($event)' (getIdToEdit)='editPlaylist($event)'></app-stat>
                   </li>
               </ul>      
             </ng-template>

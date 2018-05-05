@@ -5,6 +5,7 @@ export class Playlist {
     tagId: string;//to edit to tagId and type string
     type: string;
     media : Media[];
+
     constructor (id:string, name:string, description:string,type:string){
         this.id=id;
         this.name=name;
@@ -18,6 +19,7 @@ export class Playlist {
             {uriType:"URL", title:"6 Inch",author:"Beyonce ft. The Weeknd" ,uri:"itunes.apple.com"},
                                                 
           ]    }
+
   }
   
 export class Media {
