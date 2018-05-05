@@ -12,10 +12,10 @@ export class Playlist {
         this.tagId='No Tag';
         this.type=type;
         this.media=[
-            {uriType:"URL", title:"firstsong",author:"beyonce feat jayz" ,uri:"music.com"},
-            {uriType:"URL", title:"firstsong",author:"beyonce feat jayz" ,uri:"music.com"},
-            {uriType:"URL", title:"firstsong",author:"beyonce feat jayz" ,uri:"music.com"},
-            {uriType:"URL", title:"firstsong",author:"beyonce feat jayz" ,uri:"music.com"},
+            {uriType:"URL", title:"Pray You Catch Me",author:"Beyonce feat jayz" ,uri:"itunes.apple.com"},
+            {uriType:"URL", title:"Hold Up",author:"Beyonce feat jayz" ,uri:"itunes.apple.com"},
+            {uriType:"URL", title:"Don't Hurt Yourself",author:"Beyonce ft. Jack White" ,uri:"itunes.apple.com"},
+            {uriType:"URL", title:"6 Inch",author:"Beyonce ft. The Weeknd" ,uri:"itunes.apple.com"},
                                                 
           ]    }
   }

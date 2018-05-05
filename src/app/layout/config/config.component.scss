@@ -36,7 +36,7 @@
     border-bottom: 5px solid rgb(35, 30, 82);
 }
 
-.playlists, .tags
+.playlists
 {
     width: 80%;
     display: flex;
@@ -58,3 +58,18 @@
 
 
 
+.tags
+{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-left: -10px;
+    width: 100%;
+  
+    li {
+        list-style-type: none;
+
+    }
+
+}
