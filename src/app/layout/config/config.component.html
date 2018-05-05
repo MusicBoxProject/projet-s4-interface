@@ -19,7 +19,8 @@
             </ul>         
            </div>
           <!-- /.card-header -->
-            <div *ngIf="(isPlaylistList===true);then playlistsBlock else tagsBlock"></div>
+          <div class="card-body">
+          <div *ngIf="(isPlaylistList===true);then playlistsBlock else tagsBlock"></div>
             <ng-template #playlistsBlock>
               <ul class="playlists">
                 <li *ngFor="let playlist of playlists">
@@ -38,6 +39,7 @@
           
           </div>
       <!-- /.card-body-->
+      </div>
   </div>
   <!-- /.col-lg-8 -->
   <div class="col-lg-2"></div>
