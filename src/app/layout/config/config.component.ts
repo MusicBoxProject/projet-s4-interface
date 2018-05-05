@@ -97,6 +97,18 @@ export class ConfigComponent implements OnInit {
 
 }
 
+getIcon(type:string):string {
+  if (type=='Music'){
+  return 'fa-music'
+  }
+  else if (type=='Podcast'){
+    return'fa-podcast'
+  }
+  else if (type=='Story'){
+    return 'fa-book'
+  }
+}
+
  indexOf (id:string,arr: any[]) : number {
   let k : number =0;
   for (let a of arr){
@@ -111,4 +123,8 @@ export class ConfigComponent implements OnInit {
     this.isPlaylistList = b; 
   }
 
+
+  download() {
+    this.tagsService.downloadFile();
+  }
 }

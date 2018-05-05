@@ -80,7 +80,7 @@
             <div class=form-row>
                <div class="form-group col-2">
                   <select class="form-control" formControlName="uriType">
-                  <option *ngFor="let uriType of uriTypes" [value]="uriType">{{uriType}}</option>
+                  <option *ngFor="let uriType of getUriTypes(playlistForm.value.type)" [value]="uriType">{{uriType}}</option>
                   </select>
                </div>
                <div class="form-group col-2">
@@ -106,7 +106,8 @@
         </div>
         </div>
       </li>
-      <br><button (click)="addLair()" class="btn btn-primary" type="button"><span class="fa fa-plus fa-3x"></span></button>
+      <br><button (click)="addLair()" class="btn btn-primary" 
+      type="button" [disabled]=!isAddPossible()><span class="fa fa-plus fa-3x"></span></button>
     </ul>
 <!--    <div class="checkbox">
       <label class="center-block">

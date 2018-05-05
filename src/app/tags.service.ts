@@ -4,11 +4,13 @@ import { of } from 'rxjs/observable/of';
 
 import { Tag } from './tag';
 import { TAGS } from './tag-mock';
+import {PLAYLISTS} from './playlist-mock'
 
 import { AngularFirestore,AngularFirestoreCollection } from 'angularfire2/firestore';
 import { QuerySnapshot } from '@firebase/firestore-types';
 import { query } from '@angular/core/src/render3/instructions';
 import { Playlist } from './playlist';
+import { ConfigFile, ConfigTag } from './config-file' 
 @Injectable()
 export class TagsService {
   private itemsCollection: AngularFirestoreCollection<Tag>;
@@ -142,6 +144,89 @@ export class TagsService {
     this.db.collection('playlists').doc(playlist.id).set(Object.assign({}, playlist));
   }
 
+  fileName="newfile001.txt";
+
+  makeTextFile (fileContent) {
+    var textFile = null;
+    var data = new Blob([fileContent], {type: 'data:text/json;charset=utf-8'});
+    // If we are replacing a previously generated file we need to
+    // manually revoke the object URL to avoid memory leaks.
+    if (textFile !== null) {
+      window.URL.revokeObjectURL(textFile);
+    }
+
+    textFile = window.URL.createObjectURL(data);
+    return textFile;
+  }
+
+  createFile (fileContent) {
+  return this.makeTextFile(fileContent);
+
+  }
+  download(configFile) {
+    let a = document.createElement("a");
+    document.body.appendChild(a);
+    a.href = this.createFile(JSON.stringify(configFile));
+    a.download = "config.json";
+    a.click();
+    document.body.removeChild(a);
+
+  }
+    downloadFile() {
+    var configFile: ConfigFile = new ConfigFile();
+    this.db.collection('tags').ref.get().then(querySnapshot => {
+        let l=querySnapshot.docs.length
+        let k=0
+        querySnapshot.forEach(doc=>  {
+        const dataTag=doc.data() as Tag;
+        if ((dataTag.playlistId)!='No Playlist'){
+        this.getPlaylistById(dataTag.playlistId).then(doc => {
+          if (doc.exists) {
+              const dataPlaylist =doc.data() as Playlist;
+              configFile.configTags.push(new ConfigTag(dataTag,dataPlaylist))
+              k=k+1;
+              console.log(k,l);    
+              if (k==l) {
+                console.log("last")
+                this.download(configFile);
+              }
+      
+        }
+        else {
+              const dataPlaylist=new Playlist('Playlist Not found','','','')
+              configFile.configTags.push(new ConfigTag(dataTag,dataPlaylist))
+              console.log("No such Playlist!");
+              k=k+1;
+              console.log(k,l);    
+              if (k==l) {
+                console.log("last")
+                this.download(configFile);
+              }
+
+      }
+        }).catch(function(error) {
+            console.log("Error getting document:", error);
+        });
+      }
+      else {
+        const dataPlaylist= new Playlist('No Playlist','','','')
+        configFile.configTags.push(new ConfigTag(dataTag,dataPlaylist))
+        k=k+1;
+        console.log(k,l);    
+        if (k==l) {
+          console.log("last")
+          this.download(configFile);
+        }
+
+      }
+      });
+
+    })
+  .catch(function(error) {
+      console.log("Error getting documents: ", error);
+  });    
+
+  }
 constructor(private db : AngularFirestore) {
   // //ref makes it a collection reference
   //   db.collection('playlists').ref.get().then(querySnapshot =>
