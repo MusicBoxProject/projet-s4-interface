@@ -10,7 +10,7 @@ import { TagsService } from '../../../../tags.service';
   styleUrls: ['./add-tag.component.scss']
 })
 export class AddTagComponent implements OnChanges {
-  @Input() model =new Tag("0","tag1","purple",99,"uuid");
+  @Input() model =new Tag("0","tag1","purple",Math.floor(Math.random() * 100),"uuid");
   @Input() isEdit: boolean ;
   @Output() getTag = new EventEmitter();
 
