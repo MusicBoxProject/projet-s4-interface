@@ -15,4 +15,4 @@ export class Tag {
     }
   }
   
-export const tagColors : string[]= ["blue","green","purple","orange","red","nocolor"] 
+export const tagColors : string[]= ["blue","green","purple","orange","red","pink","yellow","nocolor"] 

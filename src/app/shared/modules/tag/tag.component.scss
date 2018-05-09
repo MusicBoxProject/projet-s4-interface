@@ -258,6 +258,14 @@
         background: linear-gradient(60deg, $red-400, $red-600);
     }
 
+    [data-background-color="pink"]{
+        background: linear-gradient(60deg, $pink-400, $pink-600);
+    }
+
+    [data-background-color="yellow"]{
+        background: linear-gradient(60deg, $yellow-400, $yellow-600);
+    }
+
     [data-background-color]{
         color: $white-color;
 
