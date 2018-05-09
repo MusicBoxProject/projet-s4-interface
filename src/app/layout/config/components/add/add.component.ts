@@ -35,7 +35,7 @@ export class AddComponent implements OnChanges {
     .subscribe(tags => this.tags=tags)
   }
 
-  constructor(private cdRef: ChangeDetectorRef, private playlistsService: PlaylistsService,private tagsService: TagsService,public activeModal: NgbActiveModal,private fb: FormBuilder) {
+  constructor(private playlistsService: PlaylistsService,private tagsService: TagsService,public activeModal: NgbActiveModal,private fb: FormBuilder) {
     this.getTags()
     this.createForm();
     this.logNameChange();
@@ -100,8 +100,9 @@ export class AddComponent implements OnChanges {
   deleteLair(i:number) {
     this.secretLairs.removeAt(i);
   }
-  editLair(media:any) {
-    media.value.confirmed=!media.value.confirmed;
+  editLair(i:number) {
+    let old=this.secretLairs.at(i).get('confirmed');
+    this.secretLairs.at(i).get('confirmed').patchValue(!old.value)
   }
 
   onSubmit() {

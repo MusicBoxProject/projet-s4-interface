@@ -65,7 +65,7 @@
                 <br>{{media.value.title}}</span>
               </div> 
               <div class="media-buttons">
-              <button type="button" (click)="editLair(media)" class="btn">
+              <button type="button" (click)="editLair(i)" class="btn">
                   <span class="fa fa-pencil fa-xs"></span>
               </button>
               <button type="button" (click)="deleteLair(i)" class="btn">
@@ -75,8 +75,8 @@
 
             </div>  
         </ng-template>
+        <ng-template #notConfirmedBlock>
         <div class="notConfirmed">
-         <div [hidden]="media.value.confirmed">
             <div class=form-row>
                <div class="form-group col-2">
                   <select class="form-control" formControlName="uriType">
@@ -93,7 +93,7 @@
                   <input class="form-control" formControlName="uri" placeholder="{{media.value.uriType}}">
                </div>
                <div class="col-2 media-buttons"> 
-                <button type="button" (click)="editLair(media)" class="btn">
+                <button type="button" (click)="editLair(i)" class="btn">
                   <span class="fa fa-check fa-xs"></span>
               </button>
               <button type="button" (click)="deleteLair(i)" class="btn">
@@ -104,7 +104,7 @@
             <br>
             <!-- End of the repeated address template -->
         </div>
-        </div>
+        </ng-template>
       </li>
       <br><button (click)="addLair()" class="btn btn-primary" 
       type="button" [disabled]=!isAddPossible()><span class="fa fa-plus fa-3x"></span></button>
@@ -121,7 +121,7 @@
       [disabled]="playlistForm.pristine" class="btn btn-danger">Reset</button>
    </div>
    </form>
-  <!-- <p>PlaylistForm value: {{ playlistForm.value | json}}</p>-->
+   <p>PlaylistForm value: {{ playlistForm.value | json}}</p>
    <!--
    <h4>Name change log</h4>
    <div *ngFor="let name of nameChangeLog">{{name}}</div>
