@@ -9,7 +9,7 @@ import {TagsService} from '../../../tags.service'
 })
 export class StatComponent implements OnInit {
     [x: string]: any;
-    @Input() tagId: string;
+    @Input() bgClass: string = "no color";
     @Input() icon: string;
     @Input() name: string;
     @Input() count: number;
@@ -19,7 +19,6 @@ export class StatComponent implements OnInit {
     @Output() getIdToEdit = new EventEmitter();
 
     Counter = 0;
-    bgClass = "nocolor"
 
     delete() { // You can give any function name
         //When delete() button is clicked getId gets called and emit the value of this.label
@@ -40,22 +39,7 @@ export class StatComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.getPlaylistColor(this.tagId)    
     }
 
-    getPlaylistColor(tagId:string) {
-         this.tagsService.getTagById(tagId).then(doc => {
-          if (doc.exists) {
-              const data =doc.data().color;
-              console.log(data);
-              this.bgClass = data;
-            } else {
-              console.log("No Color!");
-          }
-        }).catch(function(error) {
-            console.log("Error getting document:", error);
-        });    
-        
-      }
     
 }

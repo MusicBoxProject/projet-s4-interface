@@ -9,7 +9,7 @@ import {PLAYLISTS} from './playlist-mock'
 import { AngularFirestore,AngularFirestoreCollection } from 'angularfire2/firestore';
 import { QuerySnapshot } from '@firebase/firestore-types';
 import { query } from '@angular/core/src/render3/instructions';
-import { Playlist } from './playlist';
+import { Playlist, emptyTagPlaylist } from './playlist';
 import { ConfigFile, ConfigTag } from './config-file' 
 @Injectable()
 export class TagsService {
@@ -80,24 +80,49 @@ export class TagsService {
 }
 
   editTag (tag : Tag) : void {
-    this.db.collection('tags').doc(tag.id).set(Object.assign({}, tag));
+    this.db.collection('tags').doc(tag.id).set(Object.assign({}, tag))
+    .then(function() {
+      console.log("Tag successfully updated!");
+    })
+    .catch(function(error) {
+      console.log("Error getting Tag:", error);
+    })
+    .then(doc => {
+      if (tag.playlistId!='No Playlist') {
+      this.db.collection("playlists").doc(tag.playlistId).update({
+        "tag.num" : tag.num,
+        "tag.color" : tag.color 
+    }).then(function() {
+      console.log("Playlist successfully updated!");
+    })
+    .catch(function(error) {
+      console.log("Error getting playlist: Probably doen't exist anymore", error);
+    });
   }
 
-  checkTag (tagId:string,playlistId:string){
+    }
+
+    )
+  }
+
+  checkTag (tag:any,playlistId:string){
+    let tagId=tag.id;
     this.getTagById(tagId).then(doc => {
       if (doc.exists) {
           const data =doc.data();
           console.log("new",playlistId,"old",data.playlistId);
           if (data.playlistId=='No Playlist') {
             console.log("No Playlist",playlistId)            
-            data.playlistId=playlistId;
-            this.editTag(data as Tag)
-          }
+            this.db.collection("tags").doc(data.id).update({
+              playlistId: playlistId
+          })
+                    }
           else if (playlistId!=data.playlistId) {
             console.log("Old",data.playlistId)            
             this.checkPlaylist(data.playlistId);
-            data.playlistId=playlistId;
-            this.editTag(data as Tag)            
+            this.db.collection("tags").doc(data.id).update({
+              playlistId: playlistId
+          })
         } 
           
       }else {
@@ -121,19 +146,19 @@ export class TagsService {
     }
     return -1
   }
+
   checkPlaylist (id:string){
-    this.getPlaylistById(id).then(doc => {
-      if (doc.exists) {
-          const data =doc.data();
-            data.tagId='No Tag';
-            this.editPlaylist(data as Playlist)
-    }
-    else {
-      console.log("No such Playlist!");
-  }
-    }).catch(function(error) {
-        console.log("Error getting document:", error);
-    });
+    this.db.collection("playlists").doc(id).update({
+      "tag": {id:'',num:null,color:'no color'}
+  })
+  .then(function() {
+    console.log("Playlist successfully updated!");
+  })
+  .catch(function(error) {
+    console.log("Error getting playlist: Probably doen't exist anymore", error);
+  });
+
+  
 
   }
   getPlaylistById (id:string) : any {
@@ -204,7 +229,8 @@ export class TagsService {
               }
 
       }
-        }).catch(function(error) {
+        })
+        .catch(function(error) {
             console.log("Error getting document:", error);
         });
       }

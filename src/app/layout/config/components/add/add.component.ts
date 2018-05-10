@@ -1,5 +1,5 @@
 import { Component, OnInit,Output,Input, EventEmitter, ChangeDetectorRef } from '@angular/core';
-import {Playlist, Media,types,uriTypes} from '../../../../playlist'
+import {Playlist, Media,types,uriTypes,emptyTagPlaylist,TagPlaylist} from '../../../../playlist'
 import { PlaylistsService } from '../../../../playlists.service'
 import { TagsService } from '../../../../tags.service'
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
@@ -25,6 +25,7 @@ export class AddComponent implements OnChanges {
 
   types = types;
   uriTypes= uriTypes;
+  emptyTagPlaylist: TagPlaylist=emptyTagPlaylist
  
  
   submitted = false;
@@ -46,7 +47,7 @@ export class AddComponent implements OnChanges {
     this.playlistForm = this.fb.group({
       name: '',
       description: '',
-      tagId:"0",
+      tagId:'',
       type:'',
       secretLairs: this.fb.array([]),
       sidekick:'',
@@ -62,7 +63,7 @@ export class AddComponent implements OnChanges {
       
       name: this.model.name,
       description: this.model.description,
-      tagId:this.model.tagId,
+      tagId:this.model.tag.id,
       type:this.model.type,
 
     });
@@ -127,16 +128,16 @@ export class AddComponent implements OnChanges {
 
     // deep copy of form model lairs
     const secretLairsDeepCopy: Media[] = formModel.secretLairs.map(
-//      (media: Media) => Object.assign({}, media)
-(media: Media) => { const doc=
-  {uriType:media.uriType, 
-  title:media.title,
-  author:media.author,
-  uri:media.uri,  
-  };
-  return doc;
-}
-);
+    //      (media: Media) => Object.assign({}, media)
+    (media: Media) => { const doc=
+      {uriType:media.uriType, 
+      title:media.title,
+      author:media.author,
+      uri:media.uri,  
+      };
+      return doc;
+    }
+    );
 
     // return new `Hero` object containing a combination of original hero value(s)
     // and deep copies of changed form model values
@@ -144,7 +145,7 @@ export class AddComponent implements OnChanges {
       id: this.model.id,
       name: formModel.name as string,
       description: formModel.description as string,
-      tagId: formModel.tagId as string,
+      tag: this.getTagById(formModel.tagId) as TagPlaylist,
       type: formModel.type as string,
       // addresses: formModel.secretLairs // <-- bad!
       media: secretLairsDeepCopy
@@ -227,5 +228,17 @@ if (this.isEdit){
   }
   }
 
+  getTagById(id:string) : any {
+    //you have to return a pure Javascript Object (not TagPlaylist)
+    let tag : any;
+    if (id=='No Id') {
+      tag= {id:'No Id',num:null,color:''}
+    } else {
+      tag =this.tags.find(tag => tag.id==id)
 
+    }
+    console.log("tag saved",tag)
+    return {id:tag.id,num:tag.num,color:tag.color};
+
+  }
 }

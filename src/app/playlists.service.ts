@@ -33,16 +33,17 @@ export class PlaylistsService {
      }*/
   
      addPlaylist (playlist: Playlist) {
+       console.log("to add",playlist)
        playlist.id = this.db.createId();
        this.db.collection('playlists').doc(playlist.id).set(Object.assign({}, playlist));
-       this.checkTag(playlist.tagId,playlist.id);
+       this.checkTag(playlist.tag,playlist.id);
        //this.playlists.push(playlist);
     
   }
 
   editPlaylist (playlist : Playlist) : void {
     this.db.collection('playlists').doc(playlist.id).set(Object.assign({}, playlist));
-    this.checkTag(playlist.tagId,playlist.id);
+    this.checkTag(playlist.tag,playlist.id);
 
     /*this.db.collection("cities").doc(playlist.id)
     .update({
@@ -67,9 +68,9 @@ export class PlaylistsService {
     });
   }
 
-
-  checkTag (tagId:string,playlistId:string){
-    this.tagsService.checkTag(tagId,playlistId); 
+  //check if tag is free on have another playlist
+  checkTag (tag:any,playlistId:string){
+    this.tagsService.checkTag(tag,playlistId); 
   }
 
 

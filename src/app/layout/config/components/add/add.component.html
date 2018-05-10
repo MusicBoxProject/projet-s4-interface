@@ -21,12 +21,12 @@
       <div class="form-group">
           <label class="center-block">Tag:
           <select class="form-control" formControlName="tagId">
-            <option  value="No Tag">
-                <li color="red">No Tag</li>
+            <option  value="No Id">
+                <li>No Tag</li>
               </option>    
               <option *ngFor="let tag of tags" [value]="tag.id">
             <li class="tagin" ></li>
-            <li color="red">{{tag.color}} {{tag.num}}</li>
+            <li >{{tag.color}} {{tag.num}}</li>
           </option>
           </select>
           </label>
