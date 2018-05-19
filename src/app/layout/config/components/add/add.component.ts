@@ -1,5 +1,5 @@
 import { Component, OnInit,Output,Input, EventEmitter, ChangeDetectorRef } from '@angular/core';
-import {Playlist, Media,types,uriTypes,emptyTagPlaylist,TagPlaylist} from '../../../../playlist'
+import {Playlist, Media,types,uriTypes,emptyTagPlaylist,TagPlaylist,emptyPlaylist} from '../../../../playlist'
 import { PlaylistsService } from '../../../../playlists.service'
 import { TagsService } from '../../../../tags.service'
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
@@ -13,7 +13,7 @@ import { Tag } from '../../../../tag';
   styleUrls: ['./add.component.scss']
 })
 export class AddComponent implements OnChanges {
-  @Input() model =new Playlist("18","Name your playlist","Add Description","Music");
+  @Input() model =emptyPlaylist;
   @Input() isEdit: boolean ;
   @Output() getPlaylist = new EventEmitter();
 
@@ -29,6 +29,7 @@ export class AddComponent implements OnChanges {
  
  
   submitted = false;
+  tagAvailable = true;
 
   getTags(): void{
      let arr: number[];
@@ -41,6 +42,7 @@ export class AddComponent implements OnChanges {
     this.createForm();
     this.logNameChange();
     this.logTypeChange();
+    this.logTagChange();
    }
 
    createForm() {
@@ -73,13 +75,11 @@ export class AddComponent implements OnChanges {
   get secretLairs(): FormArray {
     return this.playlistForm.get('secretLairs') as FormArray;
   };
-//  initializing the media array 
+//  initializing the media array for the form
   setMedia(medias: Media[]) {
     const mediaFGs = medias.map(media => this.fb.group(
-      {uriType:media.uriType, 
-      title:media.title,
-      author:media.author,
-      uri:media.uri,
+      {
+      ...media,
       confirmed:true,  
       }
     ));
@@ -88,14 +88,17 @@ export class AddComponent implements OnChanges {
   }
 
   addLair() {
-//    this.secretLairs.push(this.fb.group(new Media('','','','')));
     this.secretLairs.push(this.fb.group({
+      ...new Media('','','',''),
+      confirmed:false
+    }));
+/*    this.secretLairs.push(this.fb.group({
       uriType:"", 
       title:"",
       author:"",
       uri:"",
       confirmed:false,
-    }));
+    }));*/
   }
 
   deleteLair(i:number) {
@@ -168,6 +171,26 @@ export class AddComponent implements OnChanges {
       (value: string) => {
         console.log('change')
         this.setMedia([])}
+    );
+  }
+
+  logTagChange() {
+    const tagControl = this.playlistForm.get('tagId');
+    tagControl.valueChanges.forEach(
+      (tagId: string) => {
+        if ((tagId=='No Id')||(!this.tags)) {
+          this.tagAvailable = true
+        }
+        else if (this.tags.find(tag => tag.id==tagId).playlistId=="No Playlist") {
+          this.tagAvailable = true
+        }
+        else if (this.tags.find(tag => tag.id==tagId).playlistId!=this.model.id) {
+          this.tagAvailable = false
+        }
+        else {
+          this.tagAvailable =  true
+        }
+      } 
     );
   }
 

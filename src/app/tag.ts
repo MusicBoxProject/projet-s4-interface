@@ -15,4 +15,5 @@ export class Tag {
     }
   }
   
-export const tagColors : string[]= ["blue","green","purple","orange","red","pink","yellow","nocolor"] 
+export const tagColors : string[]= ["blue","green","purple","orange","red","pink","yellow","no color"]
+export const emptyTag : Tag=new Tag("0","","",Math.floor(Math.random() * 100),"") 

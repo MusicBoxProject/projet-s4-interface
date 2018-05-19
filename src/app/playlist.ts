@@ -12,13 +12,13 @@ export class Playlist {
         this.id=id;
         this.name=name;
         this.description=description;
-        this.tag={id:"No Id",num:null, color:"No Color"};
+        this.tag=emptyTagPlaylist;
         this.type=type;
         this.media=[
-            {uriType:"URL", title:"Pray You Catch Me",author:"Beyonce feat jayz" ,uri:"itunes.apple.com"},
+/*            {uriType:"URL", title:"Pray You Catch Me",author:"Beyonce feat jayz" ,uri:"itunes.apple.com"},
             {uriType:"URL", title:"Hold Up",author:"Beyonce feat jayz" ,uri:"itunes.apple.com"},
             {uriType:"URL", title:"Don't Hurt Yourself",author:"Beyonce ft. Jack White" ,uri:"itunes.apple.com"},
-            {uriType:"URL", title:"6 Inch",author:"Beyonce ft. The Weeknd" ,uri:"itunes.apple.com"},
+            {uriType:"URL", title:"6 Inch",author:"Beyonce ft. The Weeknd" ,uri:"itunes.apple.com"},*/
                                                 
           ]    }
 
@@ -43,7 +43,9 @@ export class TagPlaylist {
     num: number;
     color: string;
     constructor (id:string, num:number,color:string){
-        
+        this.id=id;
+        this.num=num;
+        this.color=color;        
     }
 
 }
@@ -51,4 +53,5 @@ export class TagPlaylist {
 
 export const types : string[]= ['Music','Story','Podcast']
 export const uriTypes : string[]= ['URL','PATH','RSS']
-export const emptyTagPlaylist : TagPlaylist= new TagPlaylist('',null,'nocolor')
+export const emptyTagPlaylist : TagPlaylist= new TagPlaylist('No Id',null,'no color')
+export const emptyPlaylist : Playlist = new Playlist("","","","Music")

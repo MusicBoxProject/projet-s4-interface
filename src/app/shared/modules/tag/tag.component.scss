@@ -237,6 +237,15 @@
             border-top: none;
         }
     }
+    [data-background-color]{
+        background: linear-gradient(60deg, $grey-300, $grey-400);
+        color: $white-color;
+
+        a{
+            color: $white-color;
+        }
+
+    }
 
     [data-background-color="purple"]{
         background: linear-gradient(60deg, $purple-400, $purple-600);
@@ -266,11 +275,4 @@
         background: linear-gradient(60deg, $yellow-400, $yellow-600);
     }
 
-    [data-background-color]{
-        color: $white-color;
-
-        a{
-            color: $white-color;
-        }
-    }
 }

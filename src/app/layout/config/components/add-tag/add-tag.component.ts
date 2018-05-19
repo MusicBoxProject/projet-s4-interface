@@ -102,6 +102,7 @@ export class AddTagComponent implements OnChanges {
 
   ngOnInit() {
     this.rebuildForm();
+    console.log(this.model)
   }
 
 }

@@ -1,6 +1,6 @@
 import { Component,ViewEncapsulation, OnInit } from '@angular/core';
 import { PlaylistsService } from '../../playlists.service'
-import { Playlist } from '../../playlist';
+import { Playlist,emptyPlaylist } from '../../playlist';
 import { TagsService } from '../../tags.service'
 import {Tag} from '../../tag'
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
@@ -39,7 +39,7 @@ export class ConfigComponent implements OnInit {
 
 
   deletePlaylist(id): void{
-    this.playlistsService.deletePlaylist(id)
+    this.playlistsService.deletePlaylist(this.playlists.find(playlist => playlist.id==id))
   }
 
 
@@ -52,7 +52,7 @@ export class ConfigComponent implements OnInit {
   addPlaylist(): void {
     this.isEdit = false;
 //    this.selectedPlaylist = new Playlist("18","Playlist name","Add Description","Music");
-    this.selectedPlaylist = new Playlist("","","","Music")
+    this.selectedPlaylist = emptyPlaylist
     this.open();
       
   }
