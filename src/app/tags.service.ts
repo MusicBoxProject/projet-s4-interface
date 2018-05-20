@@ -8,7 +8,6 @@ import { PLAYLISTS } from './playlist-mock'
 
 import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/firestore';
 import { QuerySnapshot } from '@firebase/firestore-types';
-import { query } from '@angular/core/src/render3/instructions';
 import { Playlist, emptyTagPlaylist, TagPlaylist } from './playlist';
 import { ConfigFile, ConfigTag } from './config-file'
 @Injectable()
