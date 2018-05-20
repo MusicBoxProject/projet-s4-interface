@@ -1,7 +1,7 @@
 import { Injectable, Input, Output } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs/observable/of';
-
+import { Observable,pipe, of} from 'rxjs';
+import { from } from 'rxjs';
+import { map} from 'rxjs/operators';
 import { Tag } from './tag';
 import { TAGS } from './tag-mock';
 import { PLAYLISTS } from './playlist-mock'
@@ -22,12 +22,12 @@ export class TagsService {
 
 
   getTags(): Observable<Tag[]> {
-    return this.db.collection('tags',ref =>ref.orderBy("num")).snapshotChanges().map(actions => {
+    return this.db.collection('tags',ref =>ref.orderBy("num")).snapshotChanges().pipe(map(actions => {
       return actions.map(a => {
         const data = a.payload.doc.data() as Tag;
         return data;
       });
-    })
+    }))
   }
 
   /*getTags (): Observable<Tag[]> {

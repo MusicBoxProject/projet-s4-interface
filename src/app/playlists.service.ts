@@ -1,7 +1,6 @@
 import { Injectable, Input, Output } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs/observable/of';
-
+import { Observable,pipe, of, from} from 'rxjs';
+import { map} from 'rxjs/operators';
 import { Playlist, TagPlaylist } from './playlist';
 import { PLAYLISTS } from './playlist-mock';
 
@@ -20,12 +19,12 @@ export class PlaylistsService {
   parent: String
 
   getPlaylists(): Observable<Playlist[]> {
-    return this.db.collection('playlists',ref =>ref.orderBy("name")).snapshotChanges().map(actions => {
+    return this.db.collection('playlists',ref =>ref.orderBy("name")).snapshotChanges().pipe(map(actions => {
       return actions.map(a => {
         const data = a.payload.doc.data() as Playlist;
         return data;
       });
-    })
+    }))
   }
 
   /*  getPlaylists (): Observable<Playlist[]> {
