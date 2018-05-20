@@ -110,12 +110,13 @@ export class AddComponent implements OnChanges {
   }
 
   onSubmit() {
+    let oldTag: TagPlaylist=this.model.tag
     this.model = this.prepareSavePlaylist();
     this.submitted = true;
           //When delete() button is clicked getId gets called and emit the value of this.label
         //as an event the config componenet intercept this event
   if (this.isEdit){
-    this.playlistsService.editPlaylist(this.model);
+    this.playlistsService.editPlaylist(this.model,oldTag);
   }
     else {
       this.playlistsService.addPlaylist(this.model);

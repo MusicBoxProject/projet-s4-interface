@@ -2,7 +2,7 @@ import { Injectable, Input, Output } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
 
-import { Playlist } from './playlist';
+import { Playlist, TagPlaylist } from './playlist';
 import { PLAYLISTS } from './playlist-mock';
 
 import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/firestore';
@@ -41,9 +41,15 @@ export class PlaylistsService {
 
   }
 
-  editPlaylist(playlist: Playlist): void {
+  editPlaylist(playlist: Playlist,oldTag: TagPlaylist): void {
     this.db.collection('playlists').doc(playlist.id).set(Object.assign({}, playlist));
-    this.checkTag(playlist.tag, playlist.id);
+    if (oldTag.id!=playlist.tag.id){
+      this.checkTag(playlist.tag, playlist.id);
+      this.emptyTag(oldTag.id);
+    } 
+    else {    
+      console.log("The tagPlaylist has not changed")
+    }
 
     /*this.db.collection("cities").doc(playlist.id)
     .update({
@@ -62,7 +68,7 @@ export class PlaylistsService {
 
   deletePlaylist(playlist: Playlist): void {
     this.db.collection("playlists").doc(playlist.id).delete().then( ()=> {
-      this.checkTag(playlist.tag,'No Playlist')
+      this.emptyTag(playlist.tag.id)
       console.log("Document successfully deleted!");
     }).catch(function (error) {
       console.error("Error removing document: ", error);
@@ -72,6 +78,10 @@ export class PlaylistsService {
   //check if tag is free on have another playlist
   checkTag(tag: any, playlistId: string) {
     this.tagsService.checkTag(tag, playlistId);
+  }
+
+  emptyTag(id: string) {
+    this.tagsService.emptyTag(id);
   }
 
 

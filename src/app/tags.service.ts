@@ -59,7 +59,7 @@ export class TagsService {
         }
         else {
           console.log("To delete", data.playlistId)
-          this.checkPlaylist(data.playlistId);
+          this.emptyPlaylist(data.playlistId);
         }
 
       } else {
@@ -120,14 +120,14 @@ export class TagsService {
         }
         else if (playlistId != data.playlistId) {
           console.log("Old", data.playlistId)
-          this.checkPlaylist(data.playlistId);
+          this.emptyPlaylist(data.playlistId);
           this.db.collection("tags").doc(data.id).update({
             playlistId: playlistId
           })
         }
 
       } else {
-        console.log("No such tag!");
+        console.log("No such tag!!");
       }
     }).catch(function (error) {
       console.log("Error getting document:", error);
@@ -147,21 +147,31 @@ export class TagsService {
     }
     return -1
   }
-
-  checkPlaylist(id: string) {
+  //make the tag of the playlist empty
+  emptyPlaylist(id: string) {
     this.db.collection("playlists").doc(id).update({
         "tag": Object.assign({},this.emptyTagPlaylist as TagPlaylist)
     })
       .then(function () {
-        console.log("Playlist successfully updated!!!");
+        console.log("Tag of the Playlist successfully emptied!!!");
       })
       .catch(function (error) {
         console.log("Error getting playlist: Probably doen't exist anymore", error);
       });
-
-
-
   }
+
+  //make the playlist Id empty (No Playlist)
+  emptyTag (id: string) {
+    this.db.collection("tags").doc(id).update({
+      playlistId:"No Playlist"
+    })
+    .then(function () {
+      console.log("playlistId of the Tag successfully emptied!!!");
+    })
+    .catch(function (error) {
+      console.log("Error getting Tag: Probably No Tag", error);
+    });
+}
   getPlaylistById(id: string): any {
     return this.db.collection('playlists').doc(id).ref.get()
 

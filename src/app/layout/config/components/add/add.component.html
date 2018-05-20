@@ -55,70 +55,72 @@
             </select>
           </label>
         </div>
-        <ul formArrayName="secretLairs" class="medias bg-light">
-          <li *ngFor="let media of secretLairs.controls; let i=index" [formGroupName]="i">
-            <!-- The repeated address template -->
-            <div *ngIf="(media.value.confirmed===true);then confirmedBlock else notConfirmedBlock"></div>
-            <ng-template #confirmedBlock>
-              <div class="confirmed bg-secondary">
-                <div class="media-title">
-                  <span class="text-white ">{{media.value.uriType}}
-                    <br>{{media.value.title}}</span>
-                </div>
-                <div class="media-buttons">
-                  <button type="button" (click)="editLair(i)" class="btn">
-                    <span class="fa fa-pencil fa-xs"></span>
-                  </button>
-                  <button type="button" (click)="deleteLair(i)" class="btn">
-                    <span class="fa fa-trash fa-xs"></span>
-                  </button>
-                </div>
 
-              </div>
-            </ng-template>
-            <ng-template #notConfirmedBlock>
-              <div class="notConfirmed">
-                <div class=form-row>
-                  <div class="form-groups">
-                    <div class=row>
-                      <div class="form-group col-6">
-                        <input class="form-control" formControlName="author" placeholder="Author">
-                      </div>
-                      <div class="form-group col-6">
-                        <input class="form-control" formControlName="title" placeholder="Title">
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="form-group col-3">
-                        <select class="form-control" formControlName="uriType">
-                          <option *ngFor="let uriType of getUriTypes(playlistForm.value.type)" [value]="uriType">{{uriType}}</option>
-                        </select>
-                      </div>
-                      <div class="form-group col-9">
-                        <input class="form-control" formControlName="uri" placeholder="{{media.value.uriType}}">
-                      </div>
-                    </div>
-
+        <label class="center-block">Media:</label>
+          <ul formArrayName="secretLairs" class="medias bg-light">
+            <li *ngFor="let media of secretLairs.controls; let i=index" [formGroupName]="i">
+              <!-- The repeated address template -->
+              <div *ngIf="(media.value.confirmed===true);then confirmedBlock else notConfirmedBlock"></div>
+              <ng-template #confirmedBlock>
+                <div class="confirmed bg-secondary">
+                  <div class="media-title">
+                    <span class="text-white ">{{media.value.uriType}}
+                      <br>{{media.value.title}}</span>
                   </div>
-                  <div class="col-2 media-buttons">
+                  <div class="media-buttons">
                     <button type="button" (click)="editLair(i)" class="btn">
-                      <span class="fa fa-check fa-xs"></span>
+                      <span class="fa fa-pencil fa-xs"></span>
                     </button>
                     <button type="button" (click)="deleteLair(i)" class="btn">
                       <span class="fa fa-trash fa-xs"></span>
                     </button>
                   </div>
+  
                 </div>
-                <br>
-                <!-- End of the repeated address template -->
-              </div>
-            </ng-template>
-          </li>
-          <br>
-          <button (click)="addLair()" class="btn btn-primary" type="button" [disabled]=!isAddPossible()>
-            <span class="fa fa-plus fa-3x"></span>
-          </button>
-        </ul>
+              </ng-template>
+              <ng-template #notConfirmedBlock>
+                <div class="notConfirmed">
+                  <div class=form-row>
+                    <div class="form-groups">
+                      <div class=row>
+                        <div class="form-group col-6">
+                          <input class="form-control" formControlName="author" placeholder="Author">
+                        </div>
+                        <div class="form-group col-6">
+                          <input class="form-control" formControlName="title" placeholder="Title">
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="form-group col-3">
+                          <select class="form-control" formControlName="uriType">
+                            <option *ngFor="let uriType of getUriTypes(playlistForm.value.type)" [value]="uriType">{{uriType}}</option>
+                          </select>
+                        </div>
+                        <div class="form-group col-9">
+                          <input class="form-control" formControlName="uri" placeholder="{{media.value.uriType}}">
+                        </div>
+                      </div>
+  
+                    </div>
+                    <div class="col-2 media-buttons">
+                      <button type="button" (click)="editLair(i)" class="btn">
+                        <span class="fa fa-check fa-xs"></span>
+                      </button>
+                      <button type="button" (click)="deleteLair(i)" class="btn">
+                        <span class="fa fa-trash fa-xs"></span>
+                      </button>
+                    </div>
+                  </div>
+                  <br>
+                  <!-- End of the repeated address template -->
+                </div>
+              </ng-template>
+            </li>
+            <br>
+            <button (click)="addLair()" class="btn btn-primary" type="button" [disabled]=!isAddPossible()>
+              <span class="fa fa-plus fa-3x"></span>
+            </button>
+          </ul>
         <!--    <div class="checkbox">
       <label class="center-block">
       <input type="checkbox" formControlName="sidekick">I have a sidekick.
@@ -129,7 +131,7 @@
           <button type="button" (click)="revert()" [disabled]="playlistForm.pristine" class="btn btn-danger">Reset</button>
         </div>
       </form>
-      <p>PlaylistForm value: {{ playlistForm.value | json}}</p>
+      <!--<p>PlaylistForm value: {{ playlistForm.value | json}}</p>-->
       <!--
    <h4>Name change log</h4>
    <div *ngFor="let name of nameChangeLog">{{name}}</div>
