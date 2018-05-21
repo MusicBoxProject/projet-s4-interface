@@ -1,23 +1,57 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { Router } from '@angular/router';
+import { AuthService } from './auth.service'
+import 'rxjs/add/operator/do';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/take';
 
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private router: Router) {}
+  user
+  constructor(private auth: AuthService, private router: Router) {
+    this.getUser()
+   }
+  /*  canActivate(
+      next: ActivatedRouteSnapshot,
+      state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+        if (localStorage.getItem('isLoggedin')) {
+          console.log("you have permission")
+          return true;
+      }
+  
+      this.router.navigate(['/login']);
+      console.log("you don't have permission")
+      return false;
+  }*/
+  getUser():void {
+    this.auth.user.subscribe(user =>{this.user=user})
+  }
+
   canActivate(
     next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-      if (localStorage.getItem('isLoggedin')) {
-        console.log("you have permission")
-        return true;
-    }
+    state: RouterStateSnapshot): Observable<boolean> | boolean {
+    console.log("bypassing authgard")
+    console.log(state.url)
+    if (state.url == "/login") {
+      console.log("checking logged in")
+      console.log(this.auth.user.subscribe(user =>{console.log(user)}))
+      console.log(this.user)
+      return true
 
-    this.router.navigate(['/login']);
-    console.log("you don't have permission")
-    return false;
-}
+    }
+    else {
+      return this.auth.user
+        .take(1)
+        .map(user => !!user)
+        .do(loggedIn => {
+          if (!loggedIn) {
+            console.log('access denied')
+            this.router.navigate(['/login']);
+          }
+        })
+    }
+  }
 
 }

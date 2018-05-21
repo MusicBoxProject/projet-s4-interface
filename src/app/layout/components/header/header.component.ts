@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { AuthService } from "../../../shared";
+
 
 @Component({
   selector: 'app-header',
@@ -9,7 +11,7 @@ import { CommonModule } from '@angular/common';
 export class HeaderComponent implements OnInit {
 
   
-  constructor() { }
+  constructor(public auth: AuthService) { }
 
   ngOnInit() {
   }

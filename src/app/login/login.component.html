@@ -1,22 +1,28 @@
-<div class="login-page">
-  <div class="row justify-content-md-center">
-      <div class="col-md-4">
-          <img src="assets/images/logo.png" width="150px" class="user-avatar" />
-          <h1>SB Admin BS4 Angular5</h1>
-          <form role="form">
-              <div class="form-content">
-                  <div class="form-group">
-                      <input type="text" ng-model="name" class="form-control input-underline input-lg" id="" placeholder="Email">
-                  </div>
 
-                  <div class="form-group">
-                      <input type="password" class="form-control input-underline input-lg" id="" placeholder="Password">
-                  </div>
-              </div>
-              <a class="btn rounded-btn" [routerLink]="['/config']" (click)="onLoggedin()"> Log in </a>
-              &nbsp;
-              <a class="btn rounded-btn" [routerLink]="['/signup']">Register</a>
-          </form>
-      </div>
-  </div>
+<div *ngIf="auth.user | async; then authenticated else guest">
+    <!-- template will replace this div -->
 </div>
+
+<!-- User NOT logged in -->
+<ng-template #guest>
+    <h3>Howdy, GUEST</h3>
+    <p>Login to get started...</p>
+
+    <button (click)="auth.googleLogin()">
+        <i class="fa fa-google"></i> Connect Google
+    </button>
+    
+
+</ng-template>
+
+
+<!-- User logged in -->
+<ng-template #authenticated>
+    <div *ngIf="auth.user | async as user">
+        <h3>Howdy, {{ user.displayName }}</h3>
+        <img [src]="user.photoURL">
+        <p>UID: {{ user.uid }}</p>
+        <p>Favorite Color: {{ user?.favoriteColor }} </p>
+        <button (click)="auth.signOut()">Logout</button>
+    </div>
+</ng-template>

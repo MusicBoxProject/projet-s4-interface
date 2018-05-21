@@ -10,7 +10,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { environment } from '../environments/environment';
 import { AngularFireModule } from 'angularfire2';
 import { AngularFirestoreModule } from 'angularfire2/firestore';
-import { AuthGuard } from './shared';
+import { AuthGuard,AuthModule } from './shared';
 import { LoginComponent } from './login/login.component';
 
 
@@ -25,6 +25,7 @@ import { LoginComponent } from './login/login.component';
     CommonModule,
     BrowserModule,
     AppRoutingModule,
+    AuthModule,
     NgbModule.forRoot(),
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule, // imports firebase/firestore, only needed for database features

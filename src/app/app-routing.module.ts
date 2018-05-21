@@ -6,11 +6,19 @@ import { LoginComponent } from './login/login.component';
 
 
 const routes: Routes = [
-  { path: '', loadChildren: './layout/layout.module#LayoutModule', canActivate: [AuthGuard]},
-  { path: 'login', component: LoginComponent},
+  {
+    path: '',
+    loadChildren: './layout/layout.module#LayoutModule',
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'login',
+    component: LoginComponent,
+    canActivate: [AuthGuard]
+  },
 
-  
-  ];
+
+];
 
 
 @NgModule({
