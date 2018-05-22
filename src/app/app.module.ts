@@ -10,7 +10,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { environment } from '../environments/environment';
 import { AngularFireModule } from 'angularfire2';
 import { AngularFirestoreModule } from 'angularfire2/firestore';
-import { AuthGuard,AuthModule } from './shared';
+import { AuthGuard,AuthModule, RedirectDirective } from './shared';
 import { LoginComponent } from './login/login.component';
 
 
@@ -20,6 +20,7 @@ import { LoginComponent } from './login/login.component';
   declarations: [
     AppComponent,
     LoginComponent,
+    RedirectDirective,
   ],
   imports: [
     CommonModule,

@@ -35,9 +35,19 @@ export class AuthGuard implements CanActivate {
     console.log("bypassing authgard")
     console.log(state.url)
     if (state.url == "/login") {
-      console.log("checking logged in")
-      console.log(this.auth.user.subscribe(user =>{console.log(user)}))
-      console.log(this.user)
+      if (this.auth.user)
+      {
+        console.log(this.auth.user
+          .take(1)
+          .map(user => !!user)
+          .do(loggedIn => {
+            if (!loggedIn) {
+              console.log('access denied')
+            }
+            return true
+          })
+  )
+      }
       return true
 
     }
