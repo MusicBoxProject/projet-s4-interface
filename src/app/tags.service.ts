@@ -1,4 +1,4 @@
-import { Injectable, Input, Output } from '@angular/core';
+import { Injectable, Input, Output,OnInit} from '@angular/core';
 import { Observable,pipe, of} from 'rxjs';
 import { from } from 'rxjs';
 import { map} from 'rxjs/operators';
@@ -6,10 +6,12 @@ import { Tag } from './tag';
 import { TAGS } from './tag-mock';
 import { PLAYLISTS } from './playlist-mock'
 
-import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/firestore';
+import { AngularFirestore, AngularFirestoreCollection,AngularFirestoreDocument } from 'angularfire2/firestore';
 import { QuerySnapshot } from '@firebase/firestore-types';
 import { Playlist, emptyTagPlaylist, TagPlaylist } from './playlist';
 import { ConfigFile, ConfigTag } from './config-file'
+import {AuthService} from './shared'
+
 @Injectable()
 export class TagsService {
   private itemsCollection: AngularFirestoreCollection<Tag>;
@@ -17,11 +19,13 @@ export class TagsService {
   tags: Tag[] = TAGS;
   parent: String
   emptyTagPlaylist: TagPlaylist = emptyTagPlaylist;
+  user : any ={uid: '0'} ;
+  userDoc : AngularFirestoreDocument<any>
 
 
 
   getTags(): Observable<Tag[]> {
-    return this.db.collection('tags',ref =>ref.orderBy("num")).snapshotChanges().pipe(map(actions => {
+    return this.userDoc.collection('tags',ref =>ref.orderBy("num")).snapshotChanges().pipe(map(actions => {
       return actions.map(a => {
         const data = a.payload.doc.data() as Tag;
         return data;
@@ -39,13 +43,13 @@ export class TagsService {
         const doc ={exists:true,data:()=>this.tags.find(tag => tag.id==id)};
         resolve(doc);
       }); */
-    return this.db.collection('tags').doc(id).ref.get()
+      return this.userDoc.collection('tags').doc(id).ref.get()
 
   }
 
   addTag(tag: Tag) {
     tag.id = this.db.createId();
-    this.db.collection('tags').doc(tag.id).set(Object.assign({}, tag));
+    this.userDoc.collection('tags').doc(tag.id).set(Object.assign({}, tag));
     //   this.tags.push(playlist);
 
   }
@@ -65,7 +69,7 @@ export class TagsService {
         console.log("No such tag!");
       }
     }).then(doc => {
-      this.db.collection("tags").doc(id).delete().then(function () {
+      this.userDoc.collection("tags").doc(id).delete().then(function () {
         console.log("Document successfully deleted!");
       }).catch(function (error) {
         console.error("Error removing document: ", error);
@@ -80,7 +84,7 @@ export class TagsService {
   }
 
   editTag(tag: Tag): void {
-    this.db.collection('tags').doc(tag.id).set(Object.assign({}, tag))
+    this.userDoc.collection('tags').doc(tag.id).set(Object.assign({}, tag))
       .then(function () {
         console.log("Tag successfully updated!");
       })
@@ -89,7 +93,7 @@ export class TagsService {
       })
       .then(doc => {
         if (tag.playlistId != 'No Playlist') {
-          this.db.collection("playlists").doc(tag.playlistId).update({
+          this.userDoc.collection("playlists").doc(tag.playlistId).update({
             "tag.num": tag.num,
             "tag.color": tag.color
           }).then(function () {
@@ -113,14 +117,14 @@ export class TagsService {
         console.log("new", playlistId, "old", data.playlistId);
         if (data.playlistId == 'No Playlist') {
           console.log("No Playlist", playlistId)
-          this.db.collection("tags").doc(data.id).update({
+          this.userDoc.collection("tags").doc(data.id).update({
             playlistId: playlistId
           })
         }
         else if (playlistId != data.playlistId) {
           console.log("Old", data.playlistId)
           this.emptyPlaylist(data.playlistId);
-          this.db.collection("tags").doc(data.id).update({
+          this.userDoc.collection("tags").doc(data.id).update({
             playlistId: playlistId
           })
         }
@@ -148,7 +152,7 @@ export class TagsService {
   }
   //make the tag of the playlist empty
   emptyPlaylist(id: string) {
-    this.db.collection("playlists").doc(id).update({
+    this.userDoc.collection("playlists").doc(id).update({
         "tag": Object.assign({},this.emptyTagPlaylist as TagPlaylist)
     })
       .then(function () {
@@ -161,7 +165,7 @@ export class TagsService {
 
   //make the playlist Id empty (No Playlist)
   emptyTag (id: string) {
-    this.db.collection("tags").doc(id).update({
+    this.userDoc.collection("tags").doc(id).update({
       playlistId:"No Playlist"
     })
     .then(function () {
@@ -171,12 +175,15 @@ export class TagsService {
       console.log("Error getting Tag: Probably No Tag", error);
     });
 }
-  getPlaylistById(id: string): any {
-    return this.db.collection('playlists').doc(id).ref.get()
+
+getPlaylistById(id: string): any {
+    return this.userDoc.collection('playlists').doc(id).ref.get()
 
   }
+
+
   editPlaylist(playlist: Playlist): void {
-    this.db.collection('playlists').doc(playlist.id).set(Object.assign({}, playlist));
+    this.userDoc.collection('playlists').doc(playlist.id).set(Object.assign({}, playlist));
   }
 
   fileName = "newfile001.txt";
@@ -207,9 +214,11 @@ export class TagsService {
     document.body.removeChild(a);
 
   }
+
+
   downloadFile() {
     var configFile: ConfigFile = new ConfigFile();
-    this.db.collection('tags').ref.get().then(querySnapshot => {
+    this.userDoc.collection('tags').ref.get().then(querySnapshot => {
       let l = querySnapshot.docs.length
       let k = 0
       querySnapshot.forEach(doc => {
@@ -263,7 +272,30 @@ export class TagsService {
       });
 
   }
-  constructor(private db: AngularFirestore) {
+
+
+  getUser() {
+    this.authService.user.subscribe(user => {
+      if (user==null) {
+        this.user ={uid: '0'}
+      }
+      else {this.user=user}
+      this.updateUserDocRef()
+      console.log(this.user.uid)})
+    }
+  
+    updateUserDocRef() {
+      this.userDoc = this.db.doc(`users/${this.user.uid}`)
+    }
+
+    getUserO(): Observable<any> {
+    return this.authService.user
+  }
+
+  constructor(private db : AngularFirestore ,private authService: AuthService) {
+    this.userDoc = this.db.doc(`users/${this.user.uid}`)
+    this.getUser();
+
     // //ref makes it a collection reference
     //   db.collection('playlists').ref.get().then(querySnapshot =>
     //     console.log("query: ",querySnapshot.docs.length))

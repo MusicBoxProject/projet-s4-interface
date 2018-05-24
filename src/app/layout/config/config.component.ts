@@ -30,6 +30,15 @@ export class ConfigComponent implements OnInit {
 
   }
 
+  watchUser(): void {
+    this.playlistsService.getUserO().subscribe(user => {
+      this.getPlaylists()
+    })
+    this.tagsService.getUserO().subscribe(user => {
+      this.getTags()
+    })
+  }
+
   getTags(): void {
     this.tagsService.getTags()
         .subscribe(tags => this.tags=tags);
@@ -77,7 +86,7 @@ export class ConfigComponent implements OnInit {
   constructor(private modalService: NgbModal ,private playlistsService: PlaylistsService, private tagsService : TagsService) {     }
 
   ngOnInit() {
-    this.getPlaylists();
+    this.watchUser();
     this.getTags();
     
   }

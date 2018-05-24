@@ -4,10 +4,10 @@ import { map} from 'rxjs/operators';
 import { Playlist, TagPlaylist } from './playlist';
 import { PLAYLISTS } from './playlist-mock';
 
-import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/firestore';
+import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
 import { QuerySnapshot } from '@firebase/firestore-types';
 import { TagsService } from './tags.service'
-
+import {AuthService} from './shared'
 
 
 @Injectable()
@@ -16,9 +16,11 @@ export class PlaylistsService {
   playlistsFire: Observable<Playlist[]>;
   playlists: Playlist[] = PLAYLISTS;
   parent: String
+  user : any ={uid: '0'} ;
+  userDoc : AngularFirestoreDocument<any>;
 
   getPlaylists(): Observable<Playlist[]> {
-    return this.db.collection('playlists',ref =>ref.orderBy("name")).snapshotChanges().pipe(map(actions => {
+    return this.userDoc.collection('playlists',ref =>ref.orderBy("name")).snapshotChanges().pipe(map(actions => {
       return actions.map(a => {
         const data = a.payload.doc.data() as Playlist;
         return data;
@@ -31,16 +33,15 @@ export class PlaylistsService {
      }*/
 
   addPlaylist(playlist: Playlist) {
-    console.log("to add", playlist)
     playlist.id = this.db.createId();
-    this.db.collection('playlists').doc(playlist.id).set(Object.assign({}, playlist));
+    this.userDoc.collection('playlists').doc(playlist.id).set(Object.assign({}, playlist));
     this.checkTag(playlist.tag, playlist.id);
     //this.playlists.push(playlist);
 
   }
 
   editPlaylist(playlist: Playlist,oldTag: TagPlaylist): void {
-    this.db.collection('playlists').doc(playlist.id).set(Object.assign({}, playlist));
+    this.userDoc.collection('playlists').doc(playlist.id).set(Object.assign({}, playlist));
     if (oldTag.id!=playlist.tag.id){
       this.checkTag(playlist.tag, playlist.id);
       this.emptyTag(oldTag.id);
@@ -49,7 +50,7 @@ export class PlaylistsService {
       console.log("The tagPlaylist has not changed")
     }
 
-    /*this.db.collection("cities").doc(playlist.id)
+    /*db.collection("cities").doc(playlist.id)
     .update({
     tag: 1
      })
@@ -65,7 +66,7 @@ export class PlaylistsService {
   }
 
   deletePlaylist(playlist: Playlist): void {
-    this.db.collection("playlists").doc(playlist.id).delete().then( ()=> {
+    this.userDoc.collection("playlists").doc(playlist.id).delete().then( ()=> {
       this.emptyTag(playlist.tag.id)
       console.log("Document successfully deleted!");
     }).catch(function (error) {
@@ -93,8 +94,26 @@ export class PlaylistsService {
     }
     return -1
   }
+  getUser() {
+    this.authService.user.subscribe(user => {
+      if (user==null) {
+        this.user ={uid: '0'}
+      }
+      else {this.user=user}
+      this.updateUserDocRef()
+    console.log(this.user.uid)})
+  }
 
-  constructor(private db: AngularFirestore, private tagsService: TagsService) {
+  updateUserDocRef() {
+    this.userDoc = this.db.doc(`users/${this.user.uid}`)
+  }
+  getUserO(): Observable<any> {
+    return this.authService.user
+  }
+
+  constructor(private db: AngularFirestore, private tagsService: TagsService,private authService: AuthService) {
+    this.userDoc = this.db.doc(`users/${this.user.uid}`)
+    this.getUser()
     //   //ref makes it a collection reference
     //     db.collection('playlists').ref.get().then(querySnapshot =>
     //       console.log("query: ",querySnapshot.docs.length))

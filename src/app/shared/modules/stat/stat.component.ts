@@ -1,5 +1,4 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import {TagsService} from '../../../tags.service'
 
 
 @Component({
@@ -35,7 +34,7 @@ export class StatComponent implements OnInit {
 
 
 
-    constructor(private tagsService : TagsService) {
+    constructor() {
     }
 
     ngOnInit() {

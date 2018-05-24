@@ -20,7 +20,7 @@ interface User {
 @Injectable()
 export class AuthService {
 
-  user: Observable<User>;
+  user: Observable<User> = new Observable()
 
   constructor(private afAuth: AngularFireAuth,
               private afs: AngularFirestore,
@@ -54,6 +54,7 @@ export class AuthService {
         this.router.navigate(['/config']);
       })
   }
+
 
 
   private updateUserData(user) {

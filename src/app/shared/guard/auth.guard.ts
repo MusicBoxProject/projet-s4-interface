@@ -9,9 +9,8 @@ import 'rxjs/add/operator/take';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  user
+
   constructor(private auth: AuthService, private router: Router) {
-    this.getUser()
    }
   /*  canActivate(
       next: ActivatedRouteSnapshot,
@@ -25,9 +24,6 @@ export class AuthGuard implements CanActivate {
       console.log("you don't have permission")
       return false;
   }*/
-  getUser():void {
-    this.auth.user.subscribe(user =>{this.user=user})
-  }
 
   canActivate(
     next: ActivatedRouteSnapshot,
@@ -35,21 +31,7 @@ export class AuthGuard implements CanActivate {
     console.log("bypassing authgard")
     console.log(state.url)
     if (state.url == "/login") {
-      if (this.auth.user)
-      {
-        console.log(this.auth.user
-          .take(1)
-          .map(user => !!user)
-          .do(loggedIn => {
-            if (!loggedIn) {
-              console.log('access denied')
-            }
-            return true
-          })
-  )
-      }
       return true
-
     }
     else {
       return this.auth.user
