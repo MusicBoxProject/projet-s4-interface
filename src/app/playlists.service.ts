@@ -33,11 +33,14 @@ export class PlaylistsService {
      }*/
 
   addPlaylist(playlist: Playlist) {
-    playlist.id = this.db.createId();
     this.userDoc.collection('playlists').doc(playlist.id).set(Object.assign({}, playlist));
     this.checkTag(playlist.tag, playlist.id);
     //this.playlists.push(playlist);
 
+  }
+
+  generateId() : string {
+    return this.db.createId();
   }
 
   editPlaylist(playlist: Playlist,oldTag: TagPlaylist): void {

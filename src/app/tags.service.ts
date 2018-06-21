@@ -232,7 +232,8 @@ getPlaylistById(id: string): any {
               console.log(k, l);
               if (k == l) {
                 console.log("last")
-                this.download(configFile);
+                //this.download(configFile);
+                console.log(configFile)
               }
 
             }
@@ -244,7 +245,8 @@ getPlaylistById(id: string): any {
               console.log(k, l);
               if (k == l) {
                 console.log("last")
-                this.download(configFile);
+                //this.download(configFile);
+                console.log(configFile)
               }
 
             }
@@ -260,7 +262,9 @@ getPlaylistById(id: string): any {
           console.log(k, l);
           if (k == l) {
             console.log("last")
-            this.download(configFile);
+            //this.download(configFile);
+            console.log(configFile)
+
           }
 
         }

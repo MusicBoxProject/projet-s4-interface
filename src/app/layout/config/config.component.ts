@@ -62,6 +62,7 @@ export class ConfigComponent implements OnInit {
     this.isEdit = false;
 //    this.selectedPlaylist = new Playlist("18","Playlist name","Add Description","Music");
     this.selectedPlaylist = emptyPlaylist
+    this.selectedPlaylist.id =this.playlistsService.generateId()
     this.open();
       
   }
