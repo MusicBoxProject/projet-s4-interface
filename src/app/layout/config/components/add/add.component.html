@@ -118,7 +118,7 @@
                         <ng-template #uriExist>
                           <div class="uriLabel">
                             <div class="cont">
-                              <a>{{media.value.uri}}</a>
+                              <a>{{media.value.uri |  slice:-20}}</a>
                               <button type="button" class="close" aria-label="Close" (click)="resetUri(i)">
                                 <span aria-hidden="true">&times;</span>
                               </button>

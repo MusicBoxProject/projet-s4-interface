@@ -1,16 +1,19 @@
-import { Injectable, Input, Output,OnInit} from '@angular/core';
-import { Observable,pipe, of} from 'rxjs';
+import { Injectable, Input, Output, OnInit } from '@angular/core';
+import { Observable, pipe, of } from 'rxjs';
 import { from } from 'rxjs';
-import { map} from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { Tag } from './tag';
 import { TAGS } from './tag-mock';
 import { PLAYLISTS } from './playlist-mock'
+import { HttpClient } from '@angular/common/http';
 
-import { AngularFirestore, AngularFirestoreCollection,AngularFirestoreDocument } from 'angularfire2/firestore';
+
+import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
 import { QuerySnapshot } from '@firebase/firestore-types';
 import { Playlist, emptyTagPlaylist, TagPlaylist } from './playlist';
 import { ConfigFile, ConfigTag } from './config-file'
-import {AuthService} from './shared'
+import { AuthService } from './shared'
+import * as JSZip from 'jszip';
 
 @Injectable()
 export class TagsService {
@@ -19,13 +22,13 @@ export class TagsService {
   tags: Tag[] = TAGS;
   parent: String
   emptyTagPlaylist: TagPlaylist = emptyTagPlaylist;
-  user : any ={uid: '0'} ;
-  userDoc : AngularFirestoreDocument<any>
+  user: any = { uid: '0' };
+  userDoc: AngularFirestoreDocument<any>
 
 
 
   getTags(): Observable<Tag[]> {
-    return this.userDoc.collection('tags',ref =>ref.orderBy("num")).snapshotChanges().pipe(map(actions => {
+    return this.userDoc.collection('tags', ref => ref.orderBy("num")).snapshotChanges().pipe(map(actions => {
       return actions.map(a => {
         const data = a.payload.doc.data() as Tag;
         return data;
@@ -43,7 +46,7 @@ export class TagsService {
         const doc ={exists:true,data:()=>this.tags.find(tag => tag.id==id)};
         resolve(doc);
       }); */
-      return this.userDoc.collection('tags').doc(id).ref.get()
+    return this.userDoc.collection('tags').doc(id).ref.get()
 
   }
 
@@ -153,7 +156,7 @@ export class TagsService {
   //make the tag of the playlist empty
   emptyPlaylist(id: string) {
     this.userDoc.collection("playlists").doc(id).update({
-        "tag": Object.assign({},this.emptyTagPlaylist as TagPlaylist)
+      "tag": Object.assign({}, this.emptyTagPlaylist as TagPlaylist)
     })
       .then(function () {
         console.log("Tag of the Playlist successfully emptied!!!");
@@ -164,19 +167,19 @@ export class TagsService {
   }
 
   //make the playlist Id empty (No Playlist)
-  emptyTag (id: string) {
+  emptyTag(id: string) {
     this.userDoc.collection("tags").doc(id).update({
-      playlistId:"No Playlist"
+      playlistId: "No Playlist"
     })
-    .then(function () {
-      console.log("playlistId of the Tag successfully emptied!!!");
-    })
-    .catch(function (error) {
-      console.log("Error getting Tag: Probably No Tag", error);
-    });
-}
+      .then(function () {
+        console.log("playlistId of the Tag successfully emptied!!!");
+      })
+      .catch(function (error) {
+        console.log("Error getting Tag: Probably No Tag", error);
+      });
+  }
 
-getPlaylistById(id: string): any {
+  getPlaylistById(id: string): any {
     return this.userDoc.collection('playlists').doc(id).ref.get()
 
   }
@@ -205,6 +208,32 @@ getPlaylistById(id: string): any {
     return this.makeTextFile(fileContent);
 
   }
+
+  downloadUrls(urlList: string[]): void {
+ /*   var zip = new JSZip();
+    var count = 0;
+    var zipFilename = "zipFilename.zip";
+    urlList.forEach(url => {
+      var filename = "filename" + String(count);
+      // loading a file and add it in a zip file
+      JSZip.JSZipUtils.getBinaryContent(url, function (err, data) {
+        if (err) {
+          throw err; // or handle the error
+        }
+        zip.file(filename, data, { binary: true });
+        count++;
+        if (count == urlList.length) {
+          var zipFile = zip.generate({ type: "blob" });
+          saveAs(zipFile, zipFilename);
+        }
+      });
+    });*/
+
+
+    this.http.get("https://cdn.pixabay.com/photo/2016/06/18/17/42/image-1465348_960_720.jpg").subscribe(data => {
+      console.log(data)
+    });
+  }
   download(configFile) {
     let a = document.createElement("a");
     document.body.appendChild(a);
@@ -215,6 +244,16 @@ getPlaylistById(id: string): any {
 
   }
 
+  prepareUrls(configFile): string[] {
+    var urlList: string[] = []
+    configFile.configTags.map(conf => {
+      conf.playlist.media.map(media => {
+        urlList.push(media.uri)
+      })
+    })
+    this.downloadUrls(urlList)
+    return urlList;
+  }
 
   downloadFile() {
     var configFile: ConfigFile = new ConfigFile();
@@ -234,6 +273,7 @@ getPlaylistById(id: string): any {
                 console.log("last")
                 //this.download(configFile);
                 console.log(configFile)
+                console.log(this.prepareUrls(configFile))
               }
 
             }
@@ -247,6 +287,7 @@ getPlaylistById(id: string): any {
                 console.log("last")
                 //this.download(configFile);
                 console.log(configFile)
+                console.log(this.prepareUrls(configFile))
               }
 
             }
@@ -264,6 +305,7 @@ getPlaylistById(id: string): any {
             console.log("last")
             //this.download(configFile);
             console.log(configFile)
+            console.log(this.prepareUrls(configFile))
 
           }
 
@@ -280,23 +322,24 @@ getPlaylistById(id: string): any {
 
   getUser() {
     this.authService.user.subscribe(user => {
-      if (user==null) {
-        this.user ={uid: '0'}
+      if (user == null) {
+        this.user = { uid: '0' }
       }
-      else {this.user=user}
+      else { this.user = user }
       this.updateUserDocRef()
-      console.log(this.user.uid)})
-    }
-  
-    updateUserDocRef() {
-      this.userDoc = this.db.doc(`users/${this.user.uid}`)
-    }
+      console.log(this.user.uid)
+    })
+  }
 
-    getUserO(): Observable<any> {
+  updateUserDocRef() {
+    this.userDoc = this.db.doc(`users/${this.user.uid}`)
+  }
+
+  getUserO(): Observable<any> {
     return this.authService.user
   }
 
-  constructor(private db : AngularFirestore ,private authService: AuthService) {
+  constructor(private http: HttpClient,private db: AngularFirestore, private authService: AuthService) {
     this.userDoc = this.db.doc(`users/${this.user.uid}`)
     this.getUser();
 

@@ -6,7 +6,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormBuilder, FormGroup, FormArray } from "@angular/forms"
 import { OnChanges } from '@angular/core/src/metadata/lifecycle_hooks';
 import { Observable, pipe, of, from } from 'rxjs';
-import { map, tap , finalize} from 'rxjs/operators';
+import { map, tap, finalize } from 'rxjs/operators';
 import { Tag } from '../../../../tag';
 
 import { AngularFireStorage, AngularFireUploadTask } from 'angularfire2/storage';
@@ -309,11 +309,14 @@ export class AddComponent implements OnChanges {
     percentage = task.percentageChanges();
     snapshot = task.snapshotChanges()
     percentage.subscribe(per => {
-      this.secretLairs.at(i).get('progress').patchValue(per)      
+      this.secretLairs.at(i).get('progress').patchValue(per)
       console.log(this.secretLairs.at(i).get('progress').value)
       if (per == 100) {
-        this.secretLairs.at(i).get('uri').patchValue(path)
         this.secretLairs.at(i).get('isUploading').patchValue(false)
+        const fileRef = this.storage.ref(path);
+        fileRef.getDownloadURL().subscribe(url => {
+          this.secretLairs.at(i).get('uri').patchValue(url)
+        })
       }
     });
 
@@ -327,7 +330,7 @@ export class AddComponent implements OnChanges {
     this.secretLairs.at(i).get('progress').patchValue(0)
   }
 
-  getProgress(i):number {
+  getProgress(i): number {
     return this.secretLairs.at(i).get('progress').value
   }
 
