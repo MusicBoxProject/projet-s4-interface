@@ -9,11 +9,19 @@ import { AuthService } from "../../../shared";
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
+  isNavbarCollapsed = true;
+  user: any;
 
-  
   constructor(public auth: AuthService) { }
 
   ngOnInit() {
+  }
+  getUser() {
+    this.auth.user.subscribe(user => {
+      this.user = user;
+      console.log(user)
+    }
+    )
   }
 
 }

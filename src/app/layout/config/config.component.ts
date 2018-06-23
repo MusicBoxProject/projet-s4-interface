@@ -59,6 +59,7 @@ export class ConfigComponent implements OnInit {
 
   }
   addPlaylist(): void {
+    this.isPlaylistList = true;
     this.isEdit = false;
 //    this.selectedPlaylist = new Playlist("18","Playlist name","Add Description","Music");
     this.selectedPlaylist = emptyPlaylist
@@ -68,6 +69,7 @@ export class ConfigComponent implements OnInit {
   }
 
   addTag():void {
+    this.isPlaylistList = false;
     this.isEdit = false;
     this.selectedTag = new Tag("0","","",Math.floor(Math.random() * 100),"");
     this.openTag();

@@ -1,29 +1,47 @@
-
 <div *ngIf="auth.user | async; then authenticated else guest">
-    <!-- template will replace this div -->
+  <!-- template will replace this div -->
 </div>
 
 <!-- User NOT logged in -->
 <ng-template #guest>
-    <h3>Howdy, GUEST</h3>
-    <p>Login to get started...</p>
 
-    <button (click)="auth.googleLogin()">
-        <i class="fa fa-google"></i> Connect Google
-    </button>
-    
+  <div class="container bg-light">
 
+    <div class="omb_login">
+      <h1 class="omb_authTitle">MediaBox
+      </h1>
+      <h3 class="omb_authTitle"> 
+        <p>Login or Sign up</p>
+      </h3>
+      
+      <div class="omb_socialButtons">
+        <button class="btn btn-lg btn-block omb_btn-facebook" (click)="auth.facebookLogin()">
+          <i class="fa fa-facebook visible-xs"></i>
+          <span class="hidden-xs"> Facebook</span>
+        </button>
+
+        <div class="omb_loginOr">
+          <hr class="omb_hrOr">
+          <span class="omb_spanOr">or</span>
+        </div>
+
+        <button class="btn btn-lg btn-block omb_btn-google" (click)="auth.googleLogin()">
+          <i class="fa fa-google visible-xs"></i>
+          <span class="hidden-xs"> Gmail</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
 </ng-template>
 
 
 <!-- User logged in -->
 <ng-template #authenticated>
-    <div *ngIf="auth.user | async as user" >
-        <div appRedirect [route]="'/config'"></div>
-        <h3>Howdy, {{ user.displayName }}</h3>
-        <img [src]="user.photoURL">
-        <p>UID: {{ user.uid }}</p>
-        <p>Favorite Color: {{ user?.favoriteColor }} </p>
-        <button (click)="auth.signOut()">Logout</button>
-    </div>
+  <div *ngIf="auth.user | async as user">
+    <div appRedirect [route]="'/config'"></div>
+    <h3>Hello, {{ user.displayName }}</h3>
+    <img [src]="user.photoURL">
+    <button (click)="auth.signOut()">Logout</button>
+  </div>
 </ng-template>

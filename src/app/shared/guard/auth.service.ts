@@ -55,6 +55,10 @@ export class AuthService {
       })
   }
 
+  facebookLogin(){
+      const provider = new firebase.auth.FacebookAuthProvider();
+      return this.oAuthLogin(provider);
+    }
 
 
   private updateUserData(user) {

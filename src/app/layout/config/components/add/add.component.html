@@ -74,7 +74,7 @@
               <div class="confirmed bg-secondary">
                 <div class="media-title">
                   <span class="text-white ">{{media.value.uriType}}
-                    <br>{{media.value.title}}</span>
+                    <br> {{media.value.title | slice:0:13}}</span>
                 </div>
                 <div class="media-buttons">
                   <button type="button" (click)="editLair(i)" class="btn">
@@ -159,10 +159,10 @@
         </ul>
         <div class="row">
           <button type="submit" [disabled]="!playlistForm.valid" class="btn btn-success">Save</button> &nbsp;
-          <button type="button" (click)="revert()" [disabled]="playlistForm.pristine" class="btn btn-danger">Reset</button>
+          <button type="button" (click)="revert()" [disabled]="playlistForm.pristine" class="btn btn-outline-secondary">Reset</button>
         </div>
       </form>
-      <p>PlaylistForm value: {{ playlistForm.value | json}}</p>
+      <!--<p>PlaylistForm value: {{ playlistForm.value | json}}</p>-->
       <!--
    <h4>Name change log</h4>
    <div *ngFor="let name of nameChangeLog">{{name}}</div>

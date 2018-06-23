@@ -1,10 +1,37 @@
-<nav class="navbar navbar-expand-lg">
-  <a class="navbar-brand" href="#">Music Box</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+  <span class="navbar-brand mb-0 h1">MediaBox</span>
+  <button class="navbar-toggler" type="button" (click)="isNavbarCollapsed = !isNavbarCollapsed">
     <span class="navbar-toggler-icon"></span>
   </button>
+  <div [attr.collapse]="isNavbarCollapsed" [ngbCollapse]="isNavbarCollapsed" class="navbar-collapse">
+    <div class="elements">
+      <div class="social">
+        <li>
+          <a href="#">
+            <i class="fa fa-facebook fa-fw"></i>
+          </a>
+        </li>
+        <li>
+          <a href="https://github.com/medhabibdhif/projet-s4-interface">
+            <i class="fa fa-github fa-fw"></i>
+          </a>
+        </li>
+      </div>
+      <div *ngIf="auth.user | async as user">
+        <div class="info">
+          <a class="nav-item nav-link active text-white">Hello, {{ user.displayName }}</a>
+          <img [src]="user.photoURL" class="img-fluid" alt="Responsive image">
+          <button class="nav-item btn btn-outline-warning ml-3 mr-3" (click)="auth.signOut()">Logout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<!--<nav class="navbar navbar-expand-lg">
+  <div class="title">
+      <a class="navbar-brand text-white">MediaBox</a>
+  </div>
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item active">
         <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
@@ -27,9 +54,4 @@
         <a class="nav-link disabled" href="#">Disabled</a>
       </li>
     </ul>
-    <!-- <form class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-    </form> -->
-  </div>
-</nav>
+</nav>-->

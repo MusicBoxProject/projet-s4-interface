@@ -92,22 +92,28 @@ progress {
   height: 5px;
 }
 
-
+.custom-file {
+  width: 92%;
+}
 .medias {
   display: flex;
+  padding-top:20px;
+  padding-bottom:10px;
   flex-wrap: wrap;
-  justify-content: space-around;
-  margin-left: -10px;
   background-color: rgb(196, 193, 193);
   width: 100%;
+  button {
+    width: 25%;
+  }
  .confirmed {
-  flex-grow: 1;
-  min-width: 25%;
+  flex: 1 1 60%;
   display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-around;
   border-radius: 5%;
   padding-left: 15px;
   flex-direction: row;
-  margin-bottom: 5px;
+  margin: 5px 5px 5px 5px;
   align-items: center;
     .media-title{
       color: wheat;
