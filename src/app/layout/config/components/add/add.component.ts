@@ -56,8 +56,8 @@ export class AddComponent implements OnChanges {
       description: '',
       tagId: '',
       type: '',
+      onlyLatest: true,
       secretLairs: this.fb.array([]),
-      sidekick: '',
     });
   }
   ngOnChanges() {
@@ -72,6 +72,7 @@ export class AddComponent implements OnChanges {
       description: this.model.description,
       tagId: this.model.tag.id,
       type: this.model.type,
+      onlyLatest: this.model.onlyLatest,
 
     });
     this.setMedia(this.model.media);
@@ -96,20 +97,19 @@ export class AddComponent implements OnChanges {
   }
 
   addLair() {
+    var uriTypeDefault :string ='URL'
+    if (this.playlistForm.get('type').value=='Podcast') {
+      uriTypeDefault='RSS'
+    }
     this.secretLairs.push(this.fb.group({
-      ...new Media('', '', '', ''),
+      ...new Media(uriTypeDefault, '', '', ''),
+      id: this.generateId(),
       confirmed: false,
       isUploading: false,
       file: null,
       progress: 0,
     }));
-    /*    this.secretLairs.push(this.fb.group({
-          uriType:"", 
-          title:"",
-          author:"",
-          uri:"",
-          confirmed:false,
-        }));*/
+  
   }
 
   deleteLair(i: number) {
@@ -118,10 +118,6 @@ export class AddComponent implements OnChanges {
   editLair(i: number) {
     let old = this.secretLairs.at(i).get('confirmed');
     this.secretLairs.at(i).get('confirmed').patchValue(!old.value)
-  }
-
-  uploadFile(i: number) {
-    console.log("uploading")
   }
 
   onSubmit() {
@@ -151,10 +147,12 @@ export class AddComponent implements OnChanges {
       (media: Media) => {
         const doc =
           {
+            id: media.id,
             uriType: media.uriType,
             title: media.title,
             author: media.author,
             uri: media.uri,
+            path: media.path,
           };
         return doc;
       }
@@ -168,6 +166,7 @@ export class AddComponent implements OnChanges {
       description: formModel.description as string,
       tag: this.getTagById(formModel.tagId) as TagPlaylist,
       type: formModel.type as string,
+      onlyLatest:formModel.onlyLatest as boolean,
       // addresses: formModel.secretLairs // <-- bad!
       media: secretLairsDeepCopy
     };
@@ -189,9 +188,11 @@ export class AddComponent implements OnChanges {
       (value: string) => {
         console.log('change')
         this.setMedia([])
+        this.playlistForm.get('onlyLatest').patchValue(true)
       }
     );
   }
+
 
   logTagChange() {
     const tagControl = this.playlistForm.get('tagId');
@@ -286,12 +287,17 @@ export class AddComponent implements OnChanges {
 
   onFileChange(event, i) {
     var file = event.target.files[0]
-    console.log(file.name)
-    console.log(i)
+    var ext =file.type.split('/')[0]
+    console.log ('the type: '+ ext)
+    if (ext == 'audio') {
+      this.uploadFile (i,file)
+    }
+  }
+
+  uploadFile (i:number,file: any) {
     this.secretLairs.at(i).get('file').patchValue(file)
     console.log(this.secretLairs.at(i).get('file').value.name)
 
-    var task: AngularFireUploadTask;
     var percentage: Observable<number>;
     var snapshot: Observable<any>;
     //  var downloadURL: Observable<string>;
@@ -303,7 +309,7 @@ export class AddComponent implements OnChanges {
 
 
     // The main task
-    task = this.storage.upload(path, file, { customMetadata })
+    const task = this.storage.upload(path, file, { customMetadata })
     this.secretLairs.at(i).get('isUploading').patchValue(true)
     // Progress monitoring
     percentage = task.percentageChanges();
@@ -313,18 +319,22 @@ export class AddComponent implements OnChanges {
       console.log(this.secretLairs.at(i).get('progress').value)
       if (per == 100) {
         this.secretLairs.at(i).get('isUploading').patchValue(false)
-        const fileRef = this.storage.ref(path);
-        fileRef.getDownloadURL().subscribe(url => {
-          this.secretLairs.at(i).get('uri').patchValue(url)
-        })
       }
     });
-
-    // The file's download URL
-    //    downloadURL = task.downloadURL();
+    task.snapshotChanges().pipe(
+      finalize(() => {
+        const fileRef = this.storage.ref(path);
+        this.secretLairs.at(i).get('path').patchValue(path)          
+        fileRef.getDownloadURL().subscribe(url => {
+          this.secretLairs.at(i).get('path').patchValue(path)          
+          this.secretLairs.at(i).get('uri').patchValue(url)
+        })
+      })
+    ).subscribe()
   }
   resetUri(i: number): void {
     console.log("resetting")
+    this.secretLairs.at(i).get('path').patchValue("")          
     this.secretLairs.at(i).get('uri').patchValue("")
     this.secretLairs.at(i).get('isUploading').patchValue(false)
     this.secretLairs.at(i).get('progress').patchValue(0)
@@ -334,4 +344,8 @@ export class AddComponent implements OnChanges {
     return this.secretLairs.at(i).get('progress').value
   }
 
+  generateId():string {
+    return  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
+  }
 }

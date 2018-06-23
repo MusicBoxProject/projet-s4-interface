@@ -49,12 +49,21 @@
 
         </div>
         <div class="form-group">
-          <label class="center-block">Type:
-            <select class="form-control" formControlName="type">
-              <option *ngFor="let type of types" [value]="type">{{type}}</option>
-            </select>
-          </label>
-        </div>
+            <label class="center-block">Type:
+              <select class="form-control" formControlName="type">
+                <option *ngFor="let type of types" [value]="type">{{type}}</option>
+              </select>
+            </label>
+          </div>
+
+          <div *ngIf="(playlistForm.value.type==='Podcast')">
+              <div class="checkbox">
+                <label class="center-block">
+                  <input type="checkbox" formControlName="onlyLatest">
+                  <a>Download only latest Podcast</a>
+                </label>
+              </div>
+          </div>
 
         <label class="center-block">Media:</label>
         <ul formArrayName="secretLairs" class="medias">
@@ -108,7 +117,7 @@
                               </div>
                             </div>
                             <div class="row">
-                                <progress class="progress is-info" value="{{getProgress(i)}}" max="100">{{getProgress(i)}}%</progress>
+                              <progress class="progress is-info" value="{{getProgress(i)}}" max="100">{{getProgress(i)}}%</progress>
                             </div>
                           </ng-template>
                           <ng-template #urlBlock>
@@ -118,7 +127,7 @@
                         <ng-template #uriExist>
                           <div class="uriLabel">
                             <div class="cont">
-                              <a>{{media.value.uri |  slice:-20}}</a>
+                              <a>{{media.value.uri | slice:-20}}</a>
                               <button type="button" class="close" aria-label="Close" (click)="resetUri(i)">
                                 <span aria-hidden="true">&times;</span>
                               </button>
@@ -144,15 +153,10 @@
             </ng-template>
           </li>
           <br>
-          <button (click)="addLair()" class="btn btn-primary" type="button" [disabled]=!isAddPossible()>
+          <button (click)="addLair()" class="btn btn-primary" type="button" [hidden]=!isAddPossible()>
             <span class="fa fa-plus fa-3x"></span>
           </button>
         </ul>
-        <!--    <div class="checkbox">
-      <label class="center-block">
-      <input type="checkbox" formControlName="sidekick">I have a sidekick.
-      </label>
-   </div>-->
         <div class="row">
           <button type="submit" [disabled]="!playlistForm.valid" class="btn btn-success">Save</button> &nbsp;
           <button type="button" (click)="revert()" [disabled]="playlistForm.pristine" class="btn btn-danger">Reset</button>

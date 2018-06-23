@@ -5,15 +5,17 @@ import { map } from 'rxjs/operators';
 import { Tag } from './tag';
 import { TAGS } from './tag-mock';
 import { PLAYLISTS } from './playlist-mock'
-import { HttpClient } from '@angular/common/http';
 
 
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
 import { QuerySnapshot } from '@firebase/firestore-types';
-import { Playlist, emptyTagPlaylist, TagPlaylist } from './playlist';
+import { Playlist, emptyTagPlaylist, TagPlaylist, Media } from './playlist';
 import { ConfigFile, ConfigTag } from './config-file'
 import { AuthService } from './shared'
 import * as JSZip from 'jszip';
+import * as FileSaver from 'file-saver';
+import { HttpClient } from '@angular/common/http';
+
 
 @Injectable()
 export class TagsService {
@@ -168,15 +170,20 @@ export class TagsService {
 
   //make the playlist Id empty (No Playlist)
   emptyTag(id: string) {
-    this.userDoc.collection("tags").doc(id).update({
-      playlistId: "No Playlist"
-    })
-      .then(function () {
-        console.log("playlistId of the Tag successfully emptied!!!");
+    if (id != 'No Id') {
+      this.userDoc.collection("tags").doc(id).update({
+        playlistId: "No Playlist"
       })
-      .catch(function (error) {
-        console.log("Error getting Tag: Probably No Tag", error);
-      });
+        .then(function () {
+          console.log("playlistId of the Tag successfully emptied!!!");
+        })
+        .catch(function (error) {
+          console.log("Error getting Tag: Probably No Tag", error);
+        });
+    }
+    else {
+      console.log("The playlist has no tag")
+    }
   }
 
   getPlaylistById(id: string): any {
@@ -208,32 +215,104 @@ export class TagsService {
     return this.makeTextFile(fileContent);
 
   }
-
-  downloadUrls(urlList: string[]): void {
- /*   var zip = new JSZip();
-    var count = 0;
-    var zipFilename = "zipFilename.zip";
-    urlList.forEach(url => {
-      var filename = "filename" + String(count);
-      // loading a file and add it in a zip file
-      JSZip.JSZipUtils.getBinaryContent(url, function (err, data) {
-        if (err) {
-          throw err; // or handle the error
-        }
-        zip.file(filename, data, { binary: true });
-        count++;
-        if (count == urlList.length) {
-          var zipFile = zip.generate({ type: "blob" });
-          saveAs(zipFile, zipFilename);
-        }
+  generateZip(zip: JSZip) {
+    console.log("last");
+    zip
+      .generateAsync({ type: "blob" })
+      .then(function (blob) { // 1) generate the zip file
+        FileSaver.saveAs(blob, "config.zip");                          // 2) trigger the download
+      }, function (err) {
+        console.log(err);
       });
-    });*/
-
-
-    this.http.get("https://cdn.pixabay.com/photo/2016/06/18/17/42/image-1465348_960_720.jpg").subscribe(data => {
-      console.log(data)
-    });
   }
+  downloadUrls(configFile: ConfigFile): void {
+    var zip = new JSZip();
+    var j: number = 0
+    var t: number = configFile.configTags.length;
+    configFile.configTags.map(conf => {
+      let folder: string = 'MediaBox' + '/' + conf.tag.uuid.toUpperCase();
+      let m3u: string = '';
+      let mediaList = conf.playlist.media
+      let k: number = 0;
+      let l: Number = mediaList.length
+      if (l == 0) j = j + 1;
+      mediaList.forEach(media => {
+        let urlProxy = 'https://cors-anywhere.herokuapp.com/' + media.uri
+        this.http.get(urlProxy, { responseType: "blob" }).subscribe(data => {
+          console.log("we got data")
+          if ((conf.playlist.type == 'Podcast') && (conf.playlist.onlyLatest)) {
+            let reader = new FileReader();
+            reader.onload = (e) => {
+              let f = <FileReader>e.target
+              let parser = new DOMParser();
+              let xml = f.result
+              let xmlDoc = parser.parseFromString(xml, "text/xml");
+              let urlPodcast = xmlDoc.getElementsByTagName("rss")[0].getElementsByTagName("channel")[0].getElementsByTagName("item")[0]
+                .getElementsByTagName("enclosure")[0].getAttribute('url');
+              urlPodcast = 'https://cors-anywhere.herokuapp.com/' + String(urlPodcast)
+              this.http.get(urlPodcast, { responseType: "blob" }).subscribe(data => {
+                let ext = data.type.split('/')[1]
+                let fileName: string = media.id + media.title + '.' + ext
+                let filePath: string = folder + '/' + fileName
+                m3u = m3u + conf.tag.uuid.toUpperCase() + '/' + fileName + '\n'
+                zip.file(filePath, data);
+                k = k + 1;
+                console.log("in podcast"+ " k: "+k +"l: "+ l)
+                if (k == l) {
+                  let m3uFile = new Blob([m3u], { type: 'data:text/m3u;charset=utf-8' });
+                  zip.file(folder + '.m3u', m3uFile)
+                  j = j + 1;
+                  console.log("tag number done download" + j + ' t=' + t + ' j=' + j)
+                  if (j == t) {
+                    let confJson = new Blob([JSON.stringify(configFile)], { type: 'data:text/json;charset=utf-8' });
+                    zip.file("MediaBox/conf.json", confJson)
+                    this.generateZip(zip)
+                  }
+                }
+
+              })
+            }
+            reader.readAsText(data)
+          } else {
+            let ext = data.type.split('/')[1]
+            let fileName: string = media.id + media.title + '.' + ext
+            let filePath: string = folder + '/' + fileName
+            m3u = m3u + conf.tag.uuid.toUpperCase() + '/' + fileName + '\n'
+            zip.file(filePath, data);
+            k = k + 1;
+            if (k == l) {
+              let m3uFile = new Blob([m3u], { type: 'data:text/m3u;charset=utf-8' });
+              if (conf.playlist.type != 'Podcast' && !conf.playlist.onlyLatest) zip.file(folder + '.m3u', m3uFile)
+              j = j + 1;
+              console.log("tag number done download" + j + ' t=' + t + ' j=' + j)
+              if (j == t) {
+                let confJson = new Blob([JSON.stringify(configFile)], { type: 'data:text/json;charset=utf-8' });
+                zip.file("MediaBox/conf.json", confJson)
+                this.generateZip(zip)
+              }
+            }
+          }
+        }, error => {
+          console.log(error)
+          console.log("no download")
+          k = k + 1;
+          if (k == l) {
+            let m3uFile = new Blob([m3u], { type: 'data:text/m3u;charset=utf-8' });
+            if (conf.playlist.type != 'Podcast' && !conf.playlist.onlyLatest) zip.file(folder + '.m3u', m3uFile)
+            j = j + 1;
+            console.log("tag number done download" + j)
+            if (j == t) {
+              let confJson = new Blob([JSON.stringify(configFile)], { type: 'data:text/json;charset=utf-8' });
+              zip.file("conf.json", confJson)
+              this.generateZip(zip)
+            }
+          }
+        });
+      })
+
+    })
+  }
+
   download(configFile) {
     let a = document.createElement("a");
     document.body.appendChild(a);
@@ -244,16 +323,6 @@ export class TagsService {
 
   }
 
-  prepareUrls(configFile): string[] {
-    var urlList: string[] = []
-    configFile.configTags.map(conf => {
-      conf.playlist.media.map(media => {
-        urlList.push(media.uri)
-      })
-    })
-    this.downloadUrls(urlList)
-    return urlList;
-  }
 
   downloadFile() {
     var configFile: ConfigFile = new ConfigFile();
@@ -273,7 +342,7 @@ export class TagsService {
                 console.log("last")
                 //this.download(configFile);
                 console.log(configFile)
-                console.log(this.prepareUrls(configFile))
+                this.downloadUrls(configFile)
               }
 
             }
@@ -287,7 +356,7 @@ export class TagsService {
                 console.log("last")
                 //this.download(configFile);
                 console.log(configFile)
-                console.log(this.prepareUrls(configFile))
+                this.downloadUrls(configFile)
               }
 
             }
@@ -305,7 +374,7 @@ export class TagsService {
             console.log("last")
             //this.download(configFile);
             console.log(configFile)
-            console.log(this.prepareUrls(configFile))
+            this.downloadUrls(configFile)
 
           }
 
@@ -339,7 +408,7 @@ export class TagsService {
     return this.authService.user
   }
 
-  constructor(private http: HttpClient,private db: AngularFirestore, private authService: AuthService) {
+  constructor(private http: HttpClient, private db: AngularFirestore, private authService: AuthService) {
     this.userDoc = this.db.doc(`users/${this.user.uid}`)
     this.getUser();
 
