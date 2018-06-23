@@ -7,7 +7,8 @@ const routes: Routes = [
         path: '',
         component: LayoutComponent,
         children: [
-            { path: '', loadChildren: './config/config.module#ConfigModule' },
+            { path: '', redirectTo: 'config' },
+            { path: 'config', loadChildren: './config/config.module#ConfigModule' },
         ]
     }
 ];

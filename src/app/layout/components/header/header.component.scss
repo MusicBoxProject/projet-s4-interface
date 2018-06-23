@@ -1,8 +1,48 @@
 nav {
     background-color: rgb(35, 30, 82);
-
+    img {
+        height: 30px;
+        width: 30px;
+        border-radius: 15px;
+    }
+    .info {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+    [collapse="true"] {
+        padding-left: 200px;
+        padding-right: 25px;
+        .social {
+            display: flex;
+            flex-direction: row;
+            align-items: center;        
+            a {
+                opacity:0.9;
+                margin-right: 15px;
+             }
+             a:hover{
+                opacity:1;
+                margin-right: 15px;                 
+             }
+        }
+            .elements {
+                width: 100%;
+                float: right;;
+                padding-left: 50px;
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-end;
+                flex-wrap: nowrap;
+            }
+    }
 }
 
 a {
     color: aliceblue;
 }
+
+li {
+    margin-left: 15px;
+    list-style-type: none;
+    }

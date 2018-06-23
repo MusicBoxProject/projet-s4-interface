@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { AuthService } from "../../../shared";
+
 
 @Component({
   selector: 'app-header',
@@ -7,11 +9,19 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
+  isNavbarCollapsed = true;
+  user: any;
 
-  
-  constructor() { }
+  constructor(public auth: AuthService) { }
 
   ngOnInit() {
+  }
+  getUser() {
+    this.auth.user.subscribe(user => {
+      this.user = user;
+      console.log(user)
+    }
+    )
   }
 
 }

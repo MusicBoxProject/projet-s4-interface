@@ -49,86 +49,117 @@
 
         </div>
         <div class="form-group">
-          <label class="center-block">Type:
-            <select class="form-control" formControlName="type">
-              <option *ngFor="let type of types" [value]="type">{{type}}</option>
-            </select>
-          </label>
-        </div>
+            <label class="center-block">Type:
+              <select class="form-control" formControlName="type">
+                <option *ngFor="let type of types" [value]="type">{{type}}</option>
+              </select>
+            </label>
+          </div>
+
+          <div *ngIf="(playlistForm.value.type==='Podcast')">
+              <div class="checkbox">
+                <label class="center-block">
+                  <input type="checkbox" formControlName="onlyLatest">
+                  <a>Download only latest Podcast</a>
+                </label>
+              </div>
+          </div>
 
         <label class="center-block">Media:</label>
-          <ul formArrayName="secretLairs" class="medias bg-light">
-            <li *ngFor="let media of secretLairs.controls; let i=index" [formGroupName]="i">
-              <!-- The repeated address template -->
-              <div *ngIf="(media.value.confirmed===true);then confirmedBlock else notConfirmedBlock"></div>
-              <ng-template #confirmedBlock>
-                <div class="confirmed bg-secondary">
-                  <div class="media-title">
-                    <span class="text-white ">{{media.value.uriType}}
-                      <br>{{media.value.title}}</span>
+        <ul formArrayName="secretLairs" class="medias">
+          <li *ngFor="let media of secretLairs.controls; let i=index" [formGroupName]="i">
+            <!-- The repeated address template -->
+            <div *ngIf="(media.value.confirmed===true);then confirmedBlock else notConfirmedBlock"></div>
+            <ng-template #confirmedBlock>
+              <div class="confirmed bg-secondary">
+                <div class="media-title">
+                  <span class="text-white ">{{media.value.uriType}}
+                    <br> {{media.value.title | slice:0:13}}</span>
+                </div>
+                <div class="media-buttons">
+                  <button type="button" (click)="editLair(i)" class="btn">
+                    <span class="fa fa-pencil fa-xs"></span>
+                  </button>
+                  <button type="button" (click)="deleteLair(i)" class="btn">
+                    <span class="fa fa-trash fa-xs"></span>
+                  </button>
+                </div>
+
+              </div>
+            </ng-template>
+            <ng-template #notConfirmedBlock>
+              <div class="notConfirmed">
+                <div class=form-row>
+                  <div class="form-groups">
+                    <div class=row>
+                      <div class="form-group col-6">
+                        <input class="form-control" formControlName="author" placeholder="Author">
+                      </div>
+                      <div class="form-group col-6">
+                        <input class="form-control" formControlName="title" placeholder="Title">
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="form-group col-3">
+                        <select class="form-control" formControlName="uriType">
+                          <option *ngFor="let uriType of getUriTypes(playlistForm.value.type)" [value]="uriType">{{uriType}}</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-9">
+                        <div *ngIf="(media.value.uri==='');then uriEmpty else uriExist"></div>
+                        <ng-template #uriEmpty>
+                          <div *ngIf="(media.value.uriType==='PATH');then fileBlock else urlBlock"></div>
+                          <ng-template #fileBlock>
+                            <div class="row">
+                              <div class="custom-file">
+                                <input type="file" class="custom-file-input" (change)="onFileChange($event,i)" id="inputGroupFile02">
+                                <label class="custom-file-label" for="inputGroupFile02">Choose file</label>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <progress class="progress is-info" value="{{getProgress(i)}}" max="100">{{getProgress(i)}}%</progress>
+                            </div>
+                          </ng-template>
+                          <ng-template #urlBlock>
+                            <input class="form-control" formControlName="uri" placeholder="{{media.value.uriType}}">
+                          </ng-template>
+                        </ng-template>
+                        <ng-template #uriExist>
+                          <div class="uriLabel">
+                            <div class="cont">
+                              <a>{{media.value.uri | slice:-20}}</a>
+                              <button type="button" class="close" aria-label="Close" (click)="resetUri(i)">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                          </div>
+                        </ng-template>
+
+                      </div>
+                    </div>
                   </div>
-                  <div class="media-buttons">
-                    <button type="button" (click)="editLair(i)" class="btn">
-                      <span class="fa fa-pencil fa-xs"></span>
+                  <div class="col-2 media-buttons">
+                    <button type="button" (click)="editLair(i)" [disabled]="media.value.isUploading" class="btn">
+                      <span class="fa fa-check fa-xs"></span>
                     </button>
                     <button type="button" (click)="deleteLair(i)" class="btn">
                       <span class="fa fa-trash fa-xs"></span>
                     </button>
                   </div>
-  
                 </div>
-              </ng-template>
-              <ng-template #notConfirmedBlock>
-                <div class="notConfirmed">
-                  <div class=form-row>
-                    <div class="form-groups">
-                      <div class=row>
-                        <div class="form-group col-6">
-                          <input class="form-control" formControlName="author" placeholder="Author">
-                        </div>
-                        <div class="form-group col-6">
-                          <input class="form-control" formControlName="title" placeholder="Title">
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="form-group col-3">
-                          <select class="form-control" formControlName="uriType">
-                            <option *ngFor="let uriType of getUriTypes(playlistForm.value.type)" [value]="uriType">{{uriType}}</option>
-                          </select>
-                        </div>
-                        <div class="form-group col-9">
-                          <input class="form-control" formControlName="uri" placeholder="{{media.value.uriType}}">
-                        </div>
-                      </div>
-  
-                    </div>
-                    <div class="col-2 media-buttons">
-                      <button type="button" (click)="editLair(i)" class="btn">
-                        <span class="fa fa-check fa-xs"></span>
-                      </button>
-                      <button type="button" (click)="deleteLair(i)" class="btn">
-                        <span class="fa fa-trash fa-xs"></span>
-                      </button>
-                    </div>
-                  </div>
-                  <br>
-                  <!-- End of the repeated address template -->
-                </div>
-              </ng-template>
-            </li>
-            <br>
-            <button (click)="addLair()" class="btn btn-primary" type="button" [disabled]=!isAddPossible()>
-              <span class="fa fa-plus fa-3x"></span>
-            </button>
-          </ul>
-        <!--    <div class="checkbox">
-      <label class="center-block">
-      <input type="checkbox" formControlName="sidekick">I have a sidekick.
-      </label>
-   </div>-->
+                <br>
+                <!-- End of the repeated address template -->
+              </div>
+            </ng-template>
+          </li>
+          <br>
+          <button (click)="addLair()" class="btn btn-primary" type="button" [hidden]=!isAddPossible()>
+            <span class="fa fa-plus fa-3x"></span>
+          </button>
+        </ul>
         <div class="row">
           <button type="submit" [disabled]="!playlistForm.valid" class="btn btn-success">Save</button> &nbsp;
-          <button type="button" (click)="revert()" [disabled]="playlistForm.pristine" class="btn btn-danger">Reset</button>
+          <button type="button" (click)="revert()" [disabled]="playlistForm.pristine" class="btn btn-outline-secondary">Reset</button>
         </div>
       </form>
       <!--<p>PlaylistForm value: {{ playlistForm.value | json}}</p>-->

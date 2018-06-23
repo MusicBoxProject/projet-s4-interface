@@ -30,6 +30,15 @@ export class ConfigComponent implements OnInit {
 
   }
 
+  watchUser(): void {
+    this.playlistsService.getUserO().subscribe(user => {
+      this.getPlaylists()
+    })
+    this.tagsService.getUserO().subscribe(user => {
+      this.getTags()
+    })
+  }
+
   getTags(): void {
     this.tagsService.getTags()
         .subscribe(tags => this.tags=tags);
@@ -50,14 +59,17 @@ export class ConfigComponent implements OnInit {
 
   }
   addPlaylist(): void {
+    this.isPlaylistList = true;
     this.isEdit = false;
 //    this.selectedPlaylist = new Playlist("18","Playlist name","Add Description","Music");
     this.selectedPlaylist = emptyPlaylist
+    this.selectedPlaylist.id =this.playlistsService.generateId()
     this.open();
       
   }
 
   addTag():void {
+    this.isPlaylistList = false;
     this.isEdit = false;
     this.selectedTag = new Tag("0","","",Math.floor(Math.random() * 100),"");
     this.openTag();
@@ -77,7 +89,7 @@ export class ConfigComponent implements OnInit {
   constructor(private modalService: NgbModal ,private playlistsService: PlaylistsService, private tagsService : TagsService) {     }
 
   ngOnInit() {
-    this.getPlaylists();
+    this.watchUser();
     this.getTags();
     
   }

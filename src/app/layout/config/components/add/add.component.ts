@@ -1,58 +1,63 @@
-import { Component, OnInit,Output,Input, EventEmitter, ChangeDetectorRef } from '@angular/core';
-import {Playlist, Media,types,uriTypes,emptyTagPlaylist,TagPlaylist,emptyPlaylist} from '../../../../playlist'
+import { Component, OnInit, Output, Input, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Playlist, Media, types, uriTypes, emptyTagPlaylist, TagPlaylist, emptyPlaylist } from '../../../../playlist'
 import { PlaylistsService } from '../../../../playlists.service'
 import { TagsService } from '../../../../tags.service'
-import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {FormBuilder, FormGroup, FormArray} from "@angular/forms"
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { FormBuilder, FormGroup, FormArray } from "@angular/forms"
 import { OnChanges } from '@angular/core/src/metadata/lifecycle_hooks';
-import { Observable } from 'rxjs/Observable';
+import { Observable, pipe, of, from } from 'rxjs';
+import { map, tap, finalize } from 'rxjs/operators';
 import { Tag } from '../../../../tag';
+
+import { AngularFireStorage, AngularFireUploadTask } from 'angularfire2/storage';
+
+
 @Component({
   selector: 'app-add',
   templateUrl: './add.component.html',
   styleUrls: ['./add.component.scss']
 })
 export class AddComponent implements OnChanges {
-  @Input() model =emptyPlaylist;
-  @Input() isEdit: boolean ;
+  @Input() model = emptyPlaylist;
+  @Input() isEdit: boolean;
   @Output() getPlaylist = new EventEmitter();
 
-  
+
   playlistForm: FormGroup;
   nameChangeLog: string[] = [];
 
   tags: Tag[];
 
   types = types;
-  uriTypes= uriTypes;
-  emptyTagPlaylist: TagPlaylist=emptyTagPlaylist
- 
- 
+  uriTypes = uriTypes;
+  emptyTagPlaylist: TagPlaylist = emptyTagPlaylist
+
+
   submitted = false;
   tagAvailable = true;
 
-  getTags(): void{
-     let arr: number[];
-     this.tagsService.getTags()
-    .subscribe(tags => this.tags=tags)
+  getTags(): void {
+    let arr: number[];
+    this.tagsService.getTags()
+      .subscribe(tags => this.tags = tags)
   }
 
-  constructor(private playlistsService: PlaylistsService,private tagsService: TagsService,public activeModal: NgbActiveModal,private fb: FormBuilder) {
+  constructor(private storage: AngularFireStorage, private playlistsService: PlaylistsService, private tagsService: TagsService, public activeModal: NgbActiveModal, private fb: FormBuilder) {
     this.getTags()
     this.createForm();
     this.logNameChange();
     this.logTypeChange();
     this.logTagChange();
-   }
+  }
 
-   createForm() {
+  createForm() {
     this.playlistForm = this.fb.group({
       name: '',
       description: '',
-      tagId:'',
-      type:'',
+      tagId: '',
+      type: '',
+      onlyLatest: true,
       secretLairs: this.fb.array([]),
-      sidekick:'',
     });
   }
   ngOnChanges() {
@@ -62,11 +67,12 @@ export class AddComponent implements OnChanges {
   rebuildForm() {
 
     this.playlistForm.reset({
-      
+
       name: this.model.name,
       description: this.model.description,
-      tagId:this.model.tag.id,
-      type:this.model.type,
+      tagId: this.model.tag.id,
+      type: this.model.type,
+      onlyLatest: this.model.onlyLatest,
 
     });
     this.setMedia(this.model.media);
@@ -75,12 +81,15 @@ export class AddComponent implements OnChanges {
   get secretLairs(): FormArray {
     return this.playlistForm.get('secretLairs') as FormArray;
   };
-//  initializing the media array for the form
+  //  initializing the media array for the form
   setMedia(medias: Media[]) {
     const mediaFGs = medias.map(media => this.fb.group(
       {
-      ...media,
-      confirmed:true,  
+        ...media,
+        confirmed: true,
+        isUploading: false,
+        file: null,
+        progress: 0,
       }
     ));
     const mediaFormArray = this.fb.array(mediaFGs);
@@ -88,43 +97,45 @@ export class AddComponent implements OnChanges {
   }
 
   addLair() {
+    var uriTypeDefault :string ='URL'
+    if (this.playlistForm.get('type').value=='Podcast') {
+      uriTypeDefault='RSS'
+    }
     this.secretLairs.push(this.fb.group({
-      ...new Media('','','',''),
-      confirmed:false
+      ...new Media(uriTypeDefault, '', '', ''),
+      id: this.generateId(),
+      confirmed: false,
+      isUploading: false,
+      file: null,
+      progress: 0,
     }));
-/*    this.secretLairs.push(this.fb.group({
-      uriType:"", 
-      title:"",
-      author:"",
-      uri:"",
-      confirmed:false,
-    }));*/
+  
   }
 
-  deleteLair(i:number) {
+  deleteLair(i: number) {
     this.secretLairs.removeAt(i);
   }
-  editLair(i:number) {
-    let old=this.secretLairs.at(i).get('confirmed');
+  editLair(i: number) {
+    let old = this.secretLairs.at(i).get('confirmed');
     this.secretLairs.at(i).get('confirmed').patchValue(!old.value)
   }
 
   onSubmit() {
-    let oldTag: TagPlaylist=this.model.tag
+    let oldTag: TagPlaylist = this.model.tag
     this.model = this.prepareSavePlaylist();
     this.submitted = true;
-          //When delete() button is clicked getId gets called and emit the value of this.label
-        //as an event the config componenet intercept this event
-  if (this.isEdit){
-    this.playlistsService.editPlaylist(this.model,oldTag);
-  }
+    //When delete() button is clicked getId gets called and emit the value of this.label
+    //as an event the config componenet intercept this event
+    if (this.isEdit) {
+      this.playlistsService.editPlaylist(this.model, oldTag);
+    }
     else {
       this.playlistsService.addPlaylist(this.model);
 
-        }
-            
-      this.rebuildForm();
-      this.activeModal.dismiss('Cross click')
+    }
+
+    this.rebuildForm();
+    this.activeModal.dismiss('Cross click')
   }
 
   prepareSavePlaylist(): Playlist {
@@ -132,15 +143,19 @@ export class AddComponent implements OnChanges {
 
     // deep copy of form model lairs
     const secretLairsDeepCopy: Media[] = formModel.secretLairs.map(
-    //      (media: Media) => Object.assign({}, media)
-    (media: Media) => { const doc=
-      {uriType:media.uriType, 
-      title:media.title,
-      author:media.author,
-      uri:media.uri,  
-      };
-      return doc;
-    }
+      //      (media: Media) => Object.assign({}, media)
+      (media: Media) => {
+        const doc =
+          {
+            id: media.id,
+            uriType: media.uriType,
+            title: media.title,
+            author: media.author,
+            uri: media.uri,
+            path: media.path,
+          };
+        return doc;
+      }
     );
 
     // return new `Hero` object containing a combination of original hero value(s)
@@ -151,6 +166,7 @@ export class AddComponent implements OnChanges {
       description: formModel.description as string,
       tag: this.getTagById(formModel.tagId) as TagPlaylist,
       type: formModel.type as string,
+      onlyLatest:formModel.onlyLatest as boolean,
       // addresses: formModel.secretLairs // <-- bad!
       media: secretLairsDeepCopy
     };
@@ -171,48 +187,51 @@ export class AddComponent implements OnChanges {
     typeControl.valueChanges.forEach(
       (value: string) => {
         console.log('change')
-        this.setMedia([])}
+        this.setMedia([])
+        this.playlistForm.get('onlyLatest').patchValue(true)
+      }
     );
   }
+
 
   logTagChange() {
     const tagControl = this.playlistForm.get('tagId');
     tagControl.valueChanges.forEach(
       (tagId: string) => {
-        if ((tagId=='No Id')||(!this.tags)) {
+        if ((tagId == 'No Id') || (!this.tags)) {
           this.tagAvailable = true
         }
-        else if (this.tags.find(tag => tag.id==tagId).playlistId=="No Playlist") {
+        else if (this.tags.find(tag => tag.id == tagId).playlistId == "No Playlist") {
           this.tagAvailable = true
         }
-        else if (this.tags.find(tag => tag.id==tagId).playlistId!=this.model.id) {
+        else if (this.tags.find(tag => tag.id == tagId).playlistId != this.model.id) {
           this.tagAvailable = false
         }
         else {
-          this.tagAvailable =  true
+          this.tagAvailable = true
         }
-      } 
+      }
     );
   }
 
-/*  onSubmit() { this.submitted = true;
-          //When delete() button is clicked getId gets called and emit the value of this.label
-        //as an event the config componenet intercept this event
-if (this.isEdit){
-  this.model.tag=Number(this.model.tag)
-  console.log(this.model)
-  this.playlistsService.editPlaylist(this.model);
-}
-  else {
+  /*  onSubmit() { this.submitted = true;
+            //When delete() button is clicked getId gets called and emit the value of this.label
+          //as an event the config componenet intercept this event
+  if (this.isEdit){
     this.model.tag=Number(this.model.tag)
-    this.playlistsService.addPlaylist(this.model);
-
+    console.log(this.model)
+    this.playlistsService.editPlaylist(this.model);
+  }
+    else {
+      this.model.tag=Number(this.model.tag)
+      this.playlistsService.addPlaylist(this.model);
+  
+        }
+      
       }
-    
-    }
-  newPlaylist() {
-    this.model = new Playlist("42", '', '','Music',1);
-  }*/
+    newPlaylist() {
+      this.model = new Playlist("42", '', '','Music',1);
+    }*/
   get diagnostic() { return JSON.stringify(this.model); }
 
 
@@ -223,46 +242,110 @@ if (this.isEdit){
 
   }
 
-  getUriTypes(type: string) : String[] {
-    if (type=='Music') {
-        return ['URL','PATH']
+  getUriTypes(type: string): String[] {
+    if (type == 'Music') {
+      return ['URL', 'PATH']
     }
-   else if (type=='Podcast') {
+    else if (type == 'Podcast') {
       return ['RSS']
-  }
-  else if (type=='Story') {
-      return ['URL','PATH']
-  }
-  else{
-    return []
-  }
+    }
+    else if (type == 'Story') {
+      return ['URL', 'PATH']
+    }
+    else {
+      return []
+    }
 
   }
 
-  isAddPossible() : boolean{
-    let type =this.playlistForm.value.type
-    if (type=='Music'){
-    return true
-  }
-  else if ((type=='Podcast')||(type=='Story')){
-    return (this.secretLairs.length==0)
-  }
-  else {
-    return false
-  }
+  isAddPossible(): boolean {
+    let type = this.playlistForm.value.type
+    if (type == 'Music') {
+      return true
+    }
+    else if ((type == 'Podcast') || (type == 'Story')) {
+      return (this.secretLairs.length == 0)
+    }
+    else {
+      return false
+    }
   }
 
-  getTagById(id:string) : any {
+  getTagById(id: string): any {
     //you have to return a pure Javascript Object (not TagPlaylist)
-    let tag : any;
-    if (id=='No Id') {
-      tag= {id:'No Id',num:null,color:''}
+    let tag: any;
+    if (id == 'No Id') {
+      tag = { id: 'No Id', num: null, color: '' }
     } else {
-      tag =this.tags.find(tag => tag.id==id)
+      tag = this.tags.find(tag => tag.id == id)
 
     }
-    console.log("tag saved",tag)
-    return {id:tag.id,num:tag.num,color:tag.color};
+    console.log("tag saved", tag)
+    return { id: tag.id, num: tag.num, color: tag.color };
+
+  }
+
+  onFileChange(event, i) {
+    var file = event.target.files[0]
+    var ext =file.type.split('/')[0]
+    console.log ('the type: '+ ext)
+    if (ext == 'audio') {
+      this.uploadFile (i,file)
+    }
+  }
+
+  uploadFile (i:number,file: any) {
+    this.secretLairs.at(i).get('file').patchValue(file)
+    console.log(this.secretLairs.at(i).get('file').value.name)
+
+    var percentage: Observable<number>;
+    var snapshot: Observable<any>;
+    //  var downloadURL: Observable<string>;
+    // The storage path
+    const path = `${this.model.id}/${new Date().getTime()}_${file.name}`;
+
+    // Totally optional metadata
+    const customMetadata = { app: 'My AngularFire-powered PWA!' };
+
+
+    // The main task
+    const task = this.storage.upload(path, file, { customMetadata })
+    this.secretLairs.at(i).get('isUploading').patchValue(true)
+    // Progress monitoring
+    percentage = task.percentageChanges();
+    snapshot = task.snapshotChanges()
+    percentage.subscribe(per => {
+      this.secretLairs.at(i).get('progress').patchValue(per)
+      console.log(this.secretLairs.at(i).get('progress').value)
+      if (per == 100) {
+        this.secretLairs.at(i).get('isUploading').patchValue(false)
+      }
+    });
+    task.snapshotChanges().pipe(
+      finalize(() => {
+        const fileRef = this.storage.ref(path);
+        this.secretLairs.at(i).get('path').patchValue(path)          
+        fileRef.getDownloadURL().subscribe(url => {
+          this.secretLairs.at(i).get('path').patchValue(path)          
+          this.secretLairs.at(i).get('uri').patchValue(url)
+        })
+      })
+    ).subscribe()
+  }
+  resetUri(i: number): void {
+    console.log("resetting")
+    this.secretLairs.at(i).get('path').patchValue("")          
+    this.secretLairs.at(i).get('uri').patchValue("")
+    this.secretLairs.at(i).get('isUploading').patchValue(false)
+    this.secretLairs.at(i).get('progress').patchValue(0)
+  }
+
+  getProgress(i): number {
+    return this.secretLairs.at(i).get('progress').value
+  }
+
+  generateId():string {
+    return  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 
   }
 }

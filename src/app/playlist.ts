@@ -7,6 +7,7 @@ export class Playlist {
     tag: TagPlaylist;//to edit to tagId and type string
     type: string;
     media : Media[];
+    onlyLatest: boolean = true;
 
     constructor (id:string, name:string, description:string,type:string){
         this.id=id;
@@ -25,10 +26,12 @@ export class Playlist {
   }
   
 export class Media {
+    id: string = "";
     uriType: string;
     title: string;
     author: string;
     uri: string;
+    path:string ="";
     constructor (uriType:string, title:string,author:string ,uri:string){
         this.uriType= uriType;
         this.title=title;
