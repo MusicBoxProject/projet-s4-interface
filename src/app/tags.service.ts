@@ -270,6 +270,21 @@ export class TagsService {
                   }
                 }
 
+              },error => {
+                console.log(error)
+                console.log("no download latest podcast")
+                k = k + 1;
+                if (k == l) {
+                  let m3uFile = new Blob([m3u], { type: 'data:text/m3u;charset=utf-8' });
+                  zip.file(folder + '.m3u', m3uFile)
+                  j = j + 1;
+                  console.log("tag number done download" + j)
+                  if (j == t) {
+                    let confJson = new Blob([JSON.stringify(configFile)], { type: 'data:text/json;charset=utf-8' });
+                    zip.file("MediaBox/conf.json", confJson)
+                    this.generateZip(zip)
+                  }
+                }
               })
             }
             reader.readAsText(data)
@@ -303,7 +318,7 @@ export class TagsService {
             console.log("tag number done download" + j)
             if (j == t) {
               let confJson = new Blob([JSON.stringify(configFile)], { type: 'data:text/json;charset=utf-8' });
-              zip.file("conf.json", confJson)
+              zip.file("MediaBox/conf.json", confJson)
               this.generateZip(zip)
             }
           }
