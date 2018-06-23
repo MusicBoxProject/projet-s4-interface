@@ -9,7 +9,11 @@ import { PLAYLISTS } from './playlist-mock'
 
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
 import { QuerySnapshot } from '@firebase/firestore-types';
+<<<<<<< HEAD
 import { Playlist, emptyTagPlaylist, TagPlaylist, Media } from './playlist';
+=======
+import { Playlist, emptyTagPlaylist, TagPlaylist } from './playlist';
+>>>>>>> 36214438c2b0c6446452d375491100b837b93350
 import { ConfigFile, ConfigTag } from './config-file'
 import { AuthService } from './shared'
 import * as JSZip from 'jszip';
