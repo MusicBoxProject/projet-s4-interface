@@ -16,6 +16,10 @@ const routes: Routes = [
     component: LoginComponent,
     canActivate: [AuthGuard]
   },
+  {
+    path: '**',
+    redirectTo: 'login',
+  }
 
 
 ];
