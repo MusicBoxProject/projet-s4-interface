@@ -297,7 +297,7 @@ export class TagsService {
             k = k + 1;
             if (k == l) {
               let m3uFile = new Blob([m3u], { type: 'data:text/m3u;charset=utf-8' });
-              if (conf.playlist.type != 'Podcast' && !conf.playlist.onlyLatest) zip.file(folder + '.m3u', m3uFile)
+              if (conf.playlist.type != 'Podcast' || conf.playlist.onlyLatest) zip.file(folder + '.m3u', m3uFile)
               j = j + 1;
               console.log("tag number done download" + j + ' t=' + t + ' j=' + j)
               if (j == t) {
@@ -313,7 +313,7 @@ export class TagsService {
           k = k + 1;
           if (k == l) {
             let m3uFile = new Blob([m3u], { type: 'data:text/m3u;charset=utf-8' });
-            if (conf.playlist.type != 'Podcast' && !conf.playlist.onlyLatest) zip.file(folder + '.m3u', m3uFile)
+            if (conf.playlist.type != 'Podcast' || conf.playlist.onlyLatest) zip.file(folder + '.m3u', m3uFile)
             j = j + 1;
             console.log("tag number done download" + j)
             if (j == t) {
