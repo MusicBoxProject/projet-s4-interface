@@ -97,7 +97,7 @@ export class AddComponent implements OnChanges {
   }
 
   addLair() {
-    var uriTypeDefault :string ='URL'
+    var uriTypeDefault :string ='PATH'
     if (this.playlistForm.get('type').value=='Podcast') {
       uriTypeDefault='RSS'
     }
