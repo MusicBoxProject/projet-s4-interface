@@ -86,7 +86,7 @@ export class ConfigComponent implements OnInit {
     this.tagsService.deleteTag(id)
   }
 
-  constructor(private modalService: NgbModal ,private playlistsService: PlaylistsService, private tagsService : TagsService) {     }
+  constructor(private modalService: NgbModal ,private playlistsService: PlaylistsService, public tagsService : TagsService) {     }
 
   ngOnInit() {
     this.watchUser();
