@@ -1,7 +1,12 @@
 <div class="row">
     <div class="col-lg-2">
         <div class="add-btn">
-            <button type="button" (click)="download()" class="btn btn-outline-secondary ">Sync</button>
+            <button type="button" (click)="download()" [disabled]="tagsService.isSyncing" class="btn btn-outline-secondary ">
+                <div *ngIf="(tagsService.isSyncing===true)">
+                <i class="fa fa-spinner fa-spin visible-xs"></i>
+              </div>
+                <span> Sync</span>
+            </button>
           <button type="button" (click)="addPlaylist()" class="btn btn-outline-secondary ">Add Playlist</button>
         <button type="button" (click)="addTag()" class="btn btn-outline-secondary ">Add Tag</button>
       </div>
@@ -18,7 +23,7 @@
               </li>
             </ul>         
            </div>
-          <!-- /.card-header -->
+          <!-- /.card-eader -->
           <div class="card-body">
           <div *ngIf="(isPlaylistList===true);then playlistsBlock else tagsBlock"></div>
             <ng-template #playlistsBlock>
