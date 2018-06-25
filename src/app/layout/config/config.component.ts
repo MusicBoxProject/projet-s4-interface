@@ -19,6 +19,7 @@ export class ConfigComponent implements OnInit {
   selectedPlaylist : Playlist;
   selectedTag : Tag;
   isEdit : boolean ;
+  emptyPlaylistCount : number =0;
 
   tags : Tag[];
 
@@ -26,8 +27,20 @@ export class ConfigComponent implements OnInit {
 
   getPlaylists(): void {
     this.playlistsService.getPlaylists()
-        .subscribe(playlists => {this.playlists=playlists;});
+        .subscribe(playlists => {
+          this.emptyPlaylistCount =this.getEmptyPlaylistCount(playlists);
+          this.playlists=playlists;});
+  }
 
+  getEmptyPlaylistCount(playlists: Playlist[]) :number {
+    let k=0;
+    playlists.forEach( playlist => {
+      if (playlist.tag.id!= 'No Id') {
+        k++
+      }
+    })
+    console.log("notagplaylist count ",k)
+    return k
   }
 
   watchUser(): void {
