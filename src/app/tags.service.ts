@@ -26,6 +26,7 @@ export class TagsService {
   emptyTagPlaylist: TagPlaylist = emptyTagPlaylist;
   user: any = { uid: '0' };
   userDoc: AngularFirestoreDocument<any>
+  isSyncing=false;
 
 
 
@@ -216,6 +217,7 @@ export class TagsService {
 
   }
   generateZip(zip: JSZip) {
+    this.isSyncing=false
     console.log("last");
     zip
       .generateAsync({ type: "blob" })
@@ -226,11 +228,12 @@ export class TagsService {
       });
   }
   downloadUrls(configFile: ConfigFile): void {
+    this.isSyncing=true
     var zip = new JSZip();
     var j: number = 0
     var t: number = configFile.configTags.length;
     configFile.configTags.map(conf => {
-      let folder: string = 'MediaBox' + '/' + conf.tag.uuid.toUpperCase();
+      let folder: string = 'MediaBox';
       let m3u: string = '';
       let mediaList = conf.playlist.media
       let k: number = 0;
@@ -254,13 +257,13 @@ export class TagsService {
                 let ext = data.type.split('/')[1]
                 let fileName: string = media.id + media.title + '.' + ext
                 let filePath: string = folder + '/' + fileName
-                m3u = m3u + conf.tag.uuid.toUpperCase() + '/' + fileName + '\n'
+                m3u = m3u + '/' + fileName + '\n'
                 zip.file(filePath, data);
                 k = k + 1;
                 console.log("in podcast"+ " k: "+k +"l: "+ l)
                 if (k == l) {
                   let m3uFile = new Blob([m3u], { type: 'data:text/m3u;charset=utf-8' });
-                  zip.file(folder + '.m3u', m3uFile)
+                  zip.file(folder + '/' + conf.tag.uuid.toUpperCase()+'.m3u', m3uFile)
                   j = j + 1;
                   console.log("tag number done download" + j + ' t=' + t + ' j=' + j)
                   if (j == t) {
@@ -276,7 +279,7 @@ export class TagsService {
                 k = k + 1;
                 if (k == l) {
                   let m3uFile = new Blob([m3u], { type: 'data:text/m3u;charset=utf-8' });
-                  zip.file(folder + '.m3u', m3uFile)
+                  zip.file(folder + '/' + conf.tag.uuid.toUpperCase()+'.m3u', m3uFile)
                   j = j + 1;
                   console.log("tag number done download" + j)
                   if (j == t) {
@@ -292,12 +295,12 @@ export class TagsService {
             let ext = data.type.split('/')[1]
             let fileName: string = media.id + media.title + '.' + ext
             let filePath: string = folder + '/' + fileName
-            m3u = m3u + conf.tag.uuid.toUpperCase() + '/' + fileName + '\n'
+            m3u = m3u + fileName + '\n'
             zip.file(filePath, data);
             k = k + 1;
             if (k == l) {
               let m3uFile = new Blob([m3u], { type: 'data:text/m3u;charset=utf-8' });
-              if (conf.playlist.type != 'Podcast' || conf.playlist.onlyLatest) zip.file(folder + '.m3u', m3uFile)
+              if (conf.playlist.type != 'Podcast' || conf.playlist.onlyLatest) zip.file(folder + '/' + conf.tag.uuid.toUpperCase()+'.m3u', m3uFile)
               j = j + 1;
               console.log("tag number done download" + j + ' t=' + t + ' j=' + j)
               if (j == t) {
@@ -313,7 +316,7 @@ export class TagsService {
           k = k + 1;
           if (k == l) {
             let m3uFile = new Blob([m3u], { type: 'data:text/m3u;charset=utf-8' });
-            if (conf.playlist.type != 'Podcast' || conf.playlist.onlyLatest) zip.file(folder + '.m3u', m3uFile)
+            if (conf.playlist.type != 'Podcast' || conf.playlist.onlyLatest) zip.file(folder + '/' + conf.tag.uuid.toUpperCase()+'.m3u', m3uFile)
             j = j + 1;
             console.log("tag number done download" + j)
             if (j == t) {
