@@ -240,7 +240,7 @@ export class TagsService {
       if (l == 0) j = j + 1;
       mediaList.forEach(media => {
         this.isSyncing=true
-        let urlProxy = 'https://cors-anywhere.herokuapp.com/' + media.uri
+        let urlProxy = 'https://projet-s4-interface-cors.herokuapp.com/' + media.uri
         this.http.get(urlProxy, { responseType: "blob" }).subscribe(data => {
           console.log("we got data")
           if ((conf.playlist.type == 'Podcast') && (conf.playlist.onlyLatest)) {
@@ -252,7 +252,7 @@ export class TagsService {
               let xmlDoc = parser.parseFromString(xml, "text/xml");
               let urlPodcast = xmlDoc.getElementsByTagName("rss")[0].getElementsByTagName("channel")[0].getElementsByTagName("item")[0]
                 .getElementsByTagName("enclosure")[0].getAttribute('url');
-              urlPodcast = 'https://cors-anywhere.herokuapp.com/' + String(urlPodcast)
+              urlPodcast = 'https://projet-s4-interface-cors.herokuapp.com/' + String(urlPodcast)
               this.http.get(urlPodcast, { responseType: "blob" }).subscribe(data => {
                 let ext = data.type.split('/')[1]
                 let fileName: string = media.id + media.title + '.' + ext
