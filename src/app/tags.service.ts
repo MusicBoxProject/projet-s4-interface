@@ -257,7 +257,7 @@ export class TagsService {
                 let ext = data.type.split('/')[1]
                 let fileName: string = media.id + media.title + '.' + ext
                 let filePath: string = folder + '/' + fileName
-                m3u = m3u + '/' + fileName + '\n'
+                m3u = m3u  + fileName + '\n'
                 zip.file(filePath, data);
                 k = k + 1;
                 console.log("in podcast"+ " k: "+k +"l: "+ l)
